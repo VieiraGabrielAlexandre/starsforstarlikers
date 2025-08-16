@@ -1,34 +1,19 @@
-<?php
-// Carregar CSV de estrelas
-$estrelas = [];
-if (($handle = fopen("estrelas.csv", "r")) !== FALSE) {
-    $header = fgetcsv($handle, 1000, ",");
-    while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
-        $estrelas[] = $data[1];
-    }
-    fclose($handle);
-}
-?>
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>🌌 Consulta de Estrelas</title>
-    <link rel="stylesheet" href="style.css">
+    <title>Star Explorer</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; background: #0b0e2b; color: white; }
+        .option { display: inline-block; margin: 20px; padding: 40px 60px; background: #1a1f4c; border-radius: 15px; cursor: pointer; transition: 0.3s; }
+        .option:hover { background: #323a7a; }
+    </style>
 </head>
 <body>
-<div class="container">
-    <h1>🔭 Consulta Estelar</h1>
-    <form action="buscar.php" method="GET">
-        <label for="estrela">Selecione uma estrela:</label>
-        <select name="nome" id="estrela" required>
-            <option value="">-- Escolha --</option>
-            <?php foreach ($estrelas as $nome): ?>
-                <option value="<?= htmlspecialchars($nome) ?>"><?= htmlspecialchars($nome) ?></option>
-            <?php endforeach; ?>
-        </select>
-        <button type="submit">Buscar</button>
-    </form>
-</div>
+<h1>🌌 Star Explorer</h1>
+<p>Select a category to explore:</p>
+
+<div class="option" onclick="window.location.href='constellations.php'">Constellations</div>
+<!-- In the future you can add other categories like "Stars", "Planets", etc. -->
 </body>
 </html>

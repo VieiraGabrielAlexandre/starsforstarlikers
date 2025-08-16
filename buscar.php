@@ -1,45 +1,97 @@
 <?php
-$nome = $_GET['nome'] ?? '';
+// buscar.php
 
-if (!$nome) {
-    die("Nenhuma estrela selecionada.");
+// Ativa CORS e JSON
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+
+// Caminho do .env (ajuste se necessário)
+$envPath = __DIR__ . '/.env';
+
+if (!file_exists($envPath)) {
+    echo json_encode([
+        'error' => 'Env file not found',
+    ]);
+    exit;
 }
 
-// --- Buscar localização no CDS Sesame ---
-$url = "https://cds.u-strasbg.fr/cgi-bin/nph-sesame/-oxp/".urlencode($nome);
-$response = @file_get_contents($url);
+// Lê credenciais
+$env = parse_ini_file($envPath);
+$APP_ID = $env['ASTRONOMY_API_APP_ID'] ?? '';
+$APP_SECRET = $env['ASTRONOMY_API_APP_SECRET'] ?? '';
 
-if (!$response) {
-    die("Erro ao consultar a API do CDS.");
+if (!$APP_ID || !$APP_SECRET) {
+    echo json_encode([
+        'error' => 'API credentials missing',
+    ]);
+    exit;
 }
 
-// Capturar RA e DEC usando regex
-preg_match('/#RA:\s*([0-9\s.+-]+)/', $response, $raMatch);
-preg_match('/#DEC:\s*([0-9\s.+-]+)/', $response, $decMatch);
+// Pega parâmetros da requisição
+$constellation = $_GET['constellation'] ?? 'and';
+$style = $_GET['style'] ?? 'default';
 
-$ra = $raMatch[1] ?? 'Desconhecido';
-$dec = $decMatch[1] ?? 'Desconhecido';
+// Dados do observador (pode ajustar para pegar de input ou fixo)
+$observer = [
+    'latitude' => 33.775867,
+    'longitude' => -84.39733,
+    'date' => date('Y-m-d')
+];
 
-// --- Gerar imagem via NASA SkyView ---
-$imageUrl = "https://skyview.gsfc.nasa.gov/current/cgi/runquery.pl?Position=".urlencode($nome)."&Survey=DSS2%20Red&pixels=300&Return=JPEG";
+// Monta payload
+$data = [
+    "style" => $style,
+    "observer" => $observer,
+    "view" => [
+        "type" => "constellation",
+        "parameters" => [
+            "constellation" => $constellation
+        ]
+    ]
+];
 
-?>
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <title>🌟 Resultado: <?= htmlspecialchars($nome) ?></title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-<div class="container">
-    <h1>🌟 <?= htmlspecialchars($nome) ?></h1>
-    <p><b>RA:</b> <?= $ra ?></p>
-    <p><b>DEC:</b> <?= $dec ?></p>
-    <h2>📷 Imagem (SkyView DSS2 Red)</h2>
-    <img src="<?= $imageUrl ?>" alt="Imagem da estrela <?= htmlspecialchars($nome) ?>">
-    <br><br>
-    <a href="index.php">🔙 Voltar</a>
-</div>
-</body>
-</html>
+$ch = curl_init();
+curl_setopt($ch, CURLOPT_URL, "https://api.astronomyapi.com/api/v2/studio/star-chart");
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+curl_setopt($ch, CURLOPT_HTTPHEADER, [
+    'Authorization: Basic ' . base64_encode("$APP_ID:$APP_SECRET"),
+    'Content-Type: application/json',
+    'Accept: application/json'
+]);
+curl_setopt($ch, CURLOPT_POST, true);
+curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+
+$response = curl_exec($ch);
+$httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+
+if(curl_errno($ch)) {
+    echo json_encode([
+        'error' => 'Curl error: ' . curl_error($ch)
+    ]);
+    exit;
+}
+
+curl_close($ch);
+
+// Salva log para debug
+file_put_contents(__DIR__ . '/astro_log.txt', $response);
+
+// Decodifica e retorna JSON
+$json = json_decode($response, true);
+
+// Se a imagem estiver disponível
+$imageUrl = $json['data']['imageUrl'] ?? null;
+
+if (!$imageUrl) {
+    echo json_encode([
+        'error' => 'No image found',
+        'raw_response' => $json
+    ]);
+    exit;
+}
+
+echo json_encode([
+    'constellation' => $constellation,
+    'style' => $style,
+    'image' => $imageUrl
+]);
