@@ -120,6 +120,11 @@ class AstronomyExplorer {
     async handleSubmit(e) {
         e.preventDefault();
 
+        // Reset all sections first
+        this.hideAllSections();
+        this.setButtonLoading(false);
+        this.updateProgress(0);
+
         if (!this.apiKey || !this.apiSecret) {
             this.showError('Credenciais da API não configuradas', 'Por favor, configure suas credenciais da Astronomy API na seção de configuração abaixo.');
             return;
@@ -427,17 +432,20 @@ class AstronomyExplorer {
     }
 
     setButtonLoading(loading) {
+        const searchBtn = document.getElementById('searchBtn');
         if (loading) {
-            this.searchBtn.classList.add('loading');
-            this.searchBtn.disabled = true;
+            searchBtn.classList.add('loading');
+            searchBtn.disabled = true;
         } else {
-            this.searchBtn.classList.remove('loading');
-            this.searchBtn.disabled = false;
+            searchBtn.classList.remove('loading');
+            searchBtn.disabled = false;
         }
     }
 
     retrySearch() {
         this.hideAllSections();
+        this.setButtonLoading(false);
+        this.updateProgress(0);
         document.querySelector('.search-section').scrollIntoView({ behavior: 'smooth' });
     }
 
