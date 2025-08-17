@@ -506,3 +506,33 @@ svg.config-icon {
     min-width: 20px;
     min-height: 20px;
 }
+/* Tamanho padrão para ícones de informação */
+svg.info-icon {
+    width: 1.2em;
+    height: 1.2em;
+    min-width: 20px;
+    min-height: 20px;
+    max-width: 24px;
+    max-height: 24px;
+    vertical-align: middle;
+    display: inline-block;
+}
+
+svg,
+.btn-icon,
+.info-icon,
+.results-icon,
+.suggestions-icon,
+.config-icon,
+.label-icon,
+.toast-icon,
+.error-icon {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    max-width: 24px;
+    max-height: 24px;
+    vertical-align: middle;
+    display: inline-block;
+}

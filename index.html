@@ -35,200 +35,336 @@
         </div>
     </div>
 
-    <!-- Header -->
-    <header class="header">
+    <!-- Home Screen -->
+    <section class="home-screen" id="homeScreen">
         <div class="container">
-            <div class="header-content">
-                <h1 class="title">
+            <div class="home-content">
+                <div class="hero-section">
+                    <h1 class="hero-title">
+                        <svg class="hero-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
+                        Explorador de Constelações
+                    </h1>
+                    <p class="hero-subtitle">Descubra as maravilhas do universo com a Astronomy API</p>
+                </div>
+
+                <div class="options-grid">
+                    <div class="option-card" id="constellationChartsOption">
+                        <div class="option-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                        </div>
+                        <h3 class="option-title">Mapas Estelares</h3>
+                        <p class="option-description">Gere mapas detalhados das constelações visíveis em qualquer data e localização</p>
+                        <div class="option-features">
+                            <span class="feature-tag">88 Constelações</span>
+                            <span class="feature-tag">Múltiplos Estilos</span>
+                            <span class="feature-tag">Qualquer Data</span>
+                        </div>
+                        <button class="option-btn">
+                            Explorar Constelações
+                            <svg class="btn-arrow" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="option-card coming-soon">
+                        <div class="option-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
+                        </div>
+                        <h3 class="option-title">Fases da Lua</h3>
+                        <p class="option-description">Visualize as fases lunares e informações detalhadas sobre nosso satélite natural</p>
+                        <div class="coming-soon-badge">Em Breve</div>
+                    </div>
+
+                    <div class="option-card coming-soon">
+                        <div class="option-icon">
+                            <svg viewBox="0 0 24 24" fill="currentColor">
+                                <circle cx="12" cy="12" r="5"/>
+                                <line x1="12" y1="1" x2="12" y2="3"/>
+                                <line x1="12" y1="21" x2="12" y2="23"/>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+                                <line x1="1" y1="12" x2="3" y2="12"/>
+                                <line x1="21" y1="12" x2="23" y2="12"/>
+                                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+                                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+                            </svg>
+                        </div>
+                        <h3 class="option-title">Posições Planetárias</h3>
+                        <p class="option-description">Acompanhe as posições dos planetas e eventos astronômicos importantes</p>
+                        <div class="coming-soon-badge">Em Breve</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Constellation Charts Screen -->
+    <section class="constellation-screen" id="constellationScreen">
+        <div class="container">
+            <!-- Header with Back Button -->
+            <header class="screen-header">
+                <button class="back-btn" id="backToHome" aria-label="Voltar ao início">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Voltar
+                </button>
+                <h1 class="screen-title">
                     <svg class="title-icon" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                     </svg>
-                    Explorador de Constelações
+                    Mapas Estelares
                 </h1>
-                <p class="subtitle">Descubra as maravilhas do universo com a Astronomy API</p>
-            </div>
-        </div>
-    </header>
+            </header>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="container">
-            <!-- Search Section -->
-            <section class="search-section">
-                <div class="search-card">
-                    <h2 class="card-title">
-                        <svg class="card-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        Gerar Mapa Estelar
-                    </h2>
-
-                    <form class="search-form" id="constellationForm">
-                        <div class="form-grid">
-                            <div class="form-group">
-                                <label class="form-label" for="constellation">
-                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                                    </svg>
-                                    Constelação
-                                </label>
-                                <select class="form-select" id="constellation" name="constellation" required>
-                                    <option value="">Selecione uma constelação</option>
-                                    <option value="and">Andromeda</option>
-                                    <option value="ant">Antlia</option>
-                                    <option value="aps">Apus</option>
-                                    <option value="aqr">Aquarius</option>
-                                    <option value="aql">Aquila</option>
-                                    <option value="ara">Ara</option>
-                                    <option value="ari">Aries</option>
-                                    <option value="aur">Auriga</option>
-                                    <option value="boo">Boötes</option>
-                                    <option value="cae">Caelum</option>
-                                    <option value="cam">Camelopardalis</option>
-                                    <option value="cnc">Cancer</option>
-                                    <option value="cvn">Canes Venatici</option>
-                                    <option value="cma">Canis Major</option>
-                                    <option value="cmi">Canis Minor</option>
-                                    <option value="cap">Capricornus</option>
-                                    <option value="car">Carina</option>
-                                    <option value="cas">Cassiopeia</option>
-                                    <option value="cen">Centaurus</option>
-                                    <option value="cep">Cepheus</option>
-                                    <option value="cet">Cetus</option>
-                                    <option value="cha">Chamaeleon</option>
-                                    <option value="cir">Circinus</option>
-                                    <option value="col">Columba</option>
-                                    <option value="com">Coma Berenices</option>
-                                    <option value="cra">Corona Austrina</option>
-                                    <option value="crb">Corona Borealis</option>
-                                    <option value="crv">Corvus</option>
-                                    <option value="crt">Crater</option>
-                                    <option value="cru">Crux</option>
-                                    <option value="cyg">Cygnus</option>
-                                    <option value="del">Delphinus</option>
-                                    <option value="dor">Dorado</option>
-                                    <option value="dra">Draco</option>
-                                    <option value="equ">Equuleus</option>
-                                    <option value="eri">Eridanus</option>
-                                    <option value="for">Fornax</option>
-                                    <option value="gem">Gemini</option>
-                                    <option value="gru">Grus</option>
-                                    <option value="her">Hercules</option>
-                                    <option value="hor">Horologium</option>
-                                    <option value="hya">Hydra</option>
-                                    <option value="hyi">Hydrus</option>
-                                    <option value="ind">Indus</option>
-                                    <option value="lac">Lacerta</option>
-                                    <option value="leo">Leo</option>
-                                    <option value="lmi">Leo Minor</option>
-                                    <option value="lep">Lepus</option>
-                                    <option value="lib">Libra</option>
-                                    <option value="lup">Lupus</option>
-                                    <option value="lyn">Lynx</option>
-                                    <option value="lyr">Lyra</option>
-                                    <option value="men">Mensa</option>
-                                    <option value="mic">Microscopium</option>
-                                    <option value="mon">Monoceros</option>
-                                    <option value="mus">Musca</option>
-                                    <option value="nor">Norma</option>
-                                    <option value="oct">Octans</option>
-                                    <option value="oph">Ophiuchus</option>
-                                    <option value="ori">Orion</option>
-                                    <option value="pav">Pavo</option>
-                                    <option value="peg">Pegasus</option>
-                                    <option value="per">Perseus</option>
-                                    <option value="phe">Phoenix</option>
-                                    <option value="pic">Pictor</option>
-                                    <option value="psc">Pisces</option>
-                                    <option value="psa">Piscis Austrinus</option>
-                                    <option value="pup">Puppis</option>
-                                    <option value="pyx">Pyxis</option>
-                                    <option value="ret">Reticulum</option>
-                                    <option value="sge">Sagitta</option>
-                                    <option value="sgr">Sagittarius</option>
-                                    <option value="sco">Scorpius</option>
-                                    <option value="scl">Sculptor</option>
-                                    <option value="sct">Scutum</option>
-                                    <option value="ser">Serpens Cauda</option>
-                                    <option value="sex">Sextans</option>
-                                    <option value="tau">Taurus</option>
-                                    <option value="tel">Telescopium</option>
-                                    <option value="tri">Triangulum</option>
-                                    <option value="tra">Triangulum Australe</option>
-                                    <option value="tuc">Tucana</option>
-                                    <option value="uma">Ursa Major</option>
-                                    <option value="umi">Ursa Minor</option>
-                                    <option value="vel">Vela</option>
-                                    <option value="vir">Virgo</option>
-                                    <option value="vol">Volans</option>
-                                    <option value="vul">Vulpecula</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="style">
-                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
-                                    </svg>
-                                    Estilo de Visualização
-                                </label>
-                                <select class="form-select" id="style" name="style" required>
-                                    <option value="">Selecione um estilo</option>
-                                    <option value="default">Padrão</option>
-                                    <option value="inverted">Invertido</option>
-                                    <option value="navy">Azul Marinho</option>
-                                    <option value="red">Vermelho</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="location">
-                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                                    </svg>
-                                    Localização do Observador
-                                </label>
-                                <select class="form-select" id="location">
-                                    <option value="25.7617,-80.1918">Miami, FL</option>
-                                    <option value="40.7128,-74.0060">Nova York, NY</option>
-                                    <option value="34.0522,-118.2437">Los Angeles, CA</option>
-                                    <option value="41.8781,-87.6298">Chicago, IL</option>
-                                    <option value="29.7604,-95.3698">Houston, TX</option>
-                                    <option value="-23.5505,-46.6333">São Paulo, Brasil</option>
-                                    <option value="-22.9068,-43.1729">Rio de Janeiro, Brasil</option>
-                                    <option value="51.5074,-0.1278">Londres, Reino Unido</option>
-                                    <option value="48.8566,2.3522">Paris, França</option>
-                                    <option value="35.6762,139.6503">Tóquio, Japão</option>
-                                </select>
-                            </div>
-
-                            <div class="form-group">
-                                <label class="form-label" for="date">
-                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
-                                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                                    </svg>
-                                    Data de Observação
-                                </label>
-                                <input type="date" class="form-input" id="date" required>
-                            </div>
-                        </div>
-
-                        <button type="submit" class="search-btn" id="searchBtn">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
-                                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+            <div class="main-layout">
+                <!-- Search Section -->
+                <div class="search-panel">
+                    <div class="search-card">
+                        <h2 class="card-title">
+                            <svg class="card-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
                             </svg>
-                            <span class="btn-text">Gerar Mapa Estelar</span>
-                            <div class="btn-loading">
-                                <svg class="loading-spinner" viewBox="0 0 24 24" fill="currentColor">
-                                    <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z">
-                                        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
-                                    </path>
-                                </svg>
+                            Gerar Mapa Estelar
+                        </h2>
+
+                        <form class="search-form" id="constellationForm">
+                            <div class="form-grid">
+                                <div class="form-group">
+                                    <label class="form-label" for="constellation">
+                                        <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                        </svg>
+                                        Constelação
+                                    </label>
+                                    <select class="form-select" id="constellation" name="constellation" required>
+                                        <option value="">Selecione uma constelação</option>
+                                        <option value="and">Andromeda</option>
+                                        <option value="ant">Antlia</option>
+                                        <option value="aps">Apus</option>
+                                        <option value="aqr">Aquarius</option>
+                                        <option value="aql">Aquila</option>
+                                        <option value="ara">Ara</option>
+                                        <option value="ari">Aries</option>
+                                        <option value="aur">Auriga</option>
+                                        <option value="boo">Boötes</option>
+                                        <option value="cae">Caelum</option>
+                                        <option value="cam">Camelopardalis</option>
+                                        <option value="cnc">Cancer</option>
+                                        <option value="cvn">Canes Venatici</option>
+                                        <option value="cma">Canis Major</option>
+                                        <option value="cmi">Canis Minor</option>
+                                        <option value="cap">Capricornus</option>
+                                        <option value="car">Carina</option>
+                                        <option value="cas">Cassiopeia</option>
+                                        <option value="cen">Centaurus</option>
+                                        <option value="cep">Cepheus</option>
+                                        <option value="cet">Cetus</option>
+                                        <option value="cha">Chamaeleon</option>
+                                        <option value="cir">Circinus</option>
+                                        <option value="col">Columba</option>
+                                        <option value="com">Coma Berenices</option>
+                                        <option value="cra">Corona Austrina</option>
+                                        <option value="crb">Corona Borealis</option>
+                                        <option value="crv">Corvus</option>
+                                        <option value="crt">Crater</option>
+                                        <option value="cru">Crux</option>
+                                        <option value="cyg">Cygnus</option>
+                                        <option value="del">Delphinus</option>
+                                        <option value="dor">Dorado</option>
+                                        <option value="dra">Draco</option>
+                                        <option value="equ">Equuleus</option>
+                                        <option value="eri">Eridanus</option>
+                                        <option value="for">Fornax</option>
+                                        <option value="gem">Gemini</option>
+                                        <option value="gru">Grus</option>
+                                        <option value="her">Hercules</option>
+                                        <option value="hor">Horologium</option>
+                                        <option value="hya">Hydra</option>
+                                        <option value="hyi">Hydrus</option>
+                                        <option value="ind">Indus</option>
+                                        <option value="lac">Lacerta</option>
+                                        <option value="leo">Leo</option>
+                                        <option value="lmi">Leo Minor</option>
+                                        <option value="lep">Lepus</option>
+                                        <option value="lib">Libra</option>
+                                        <option value="lup">Lupus</option>
+                                        <option value="lyn">Lynx</option>
+                                        <option value="lyr">Lyra</option>
+                                        <option value="men">Mensa</option>
+                                        <option value="mic">Microscopium</option>
+                                        <option value="mon">Monoceros</option>
+                                        <option value="mus">Musca</option>
+                                        <option value="nor">Norma</option>
+                                        <option value="oct">Octans</option>
+                                        <option value="oph">Ophiuchus</option>
+                                        <option value="ori">Orion</option>
+                                        <option value="pav">Pavo</option>
+                                        <option value="peg">Pegasus</option>
+                                        <option value="per">Perseus</option>
+                                        <option value="phe">Phoenix</option>
+                                        <option value="pic">Pictor</option>
+                                        <option value="psc">Pisces</option>
+                                        <option value="psa">Piscis Austrinus</option>
+                                        <option value="pup">Puppis</option>
+                                        <option value="pyx">Pyxis</option>
+                                        <option value="ret">Reticulum</option>
+                                        <option value="sge">Sagitta</option>
+                                        <option value="sgr">Sagittarius</option>
+                                        <option value="sco">Scorpius</option>
+                                        <option value="scl">Sculptor</option>
+                                        <option value="sct">Scutum</option>
+                                        <option value="ser">Serpens Cauda</option>
+                                        <option value="sex">Sextans</option>
+                                        <option value="tau">Taurus</option>
+                                        <option value="tel">Telescopium</option>
+                                        <option value="tri">Triangulum</option>
+                                        <option value="tra">Triangulum Australe</option>
+                                        <option value="tuc">Tucana</option>
+                                        <option value="uma">Ursa Major</option>
+                                        <option value="umi">Ursa Minor</option>
+                                        <option value="vel">Vela</option>
+                                        <option value="vir">Virgo</option>
+                                        <option value="vol">Volans</option>
+                                        <option value="vul">Vulpecula</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="style">
+                                        <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                                        </svg>
+                                        Estilo de Visualização
+                                    </label>
+                                    <select class="form-select" id="style" name="style" required>
+                                        <option value="">Selecione um estilo</option>
+                                        <option value="default">Padrão</option>
+                                        <option value="inverted">Invertido</option>
+                                        <option value="navy">Azul Marinho</option>
+                                        <option value="red">Vermelho</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="location">
+                                        <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                        </svg>
+                                        Localização do Observador
+                                    </label>
+                                    <select class="form-select" id="location">
+                                        <option value="25.7617,-80.1918">Miami, FL</option>
+                                        <option value="40.7128,-74.0060">Nova York, NY</option>
+                                        <option value="34.0522,-118.2437">Los Angeles, CA</option>
+                                        <option value="41.8781,-87.6298">Chicago, IL</option>
+                                        <option value="29.7604,-95.3698">Houston, TX</option>
+                                        <option value="-23.5505,-46.6333">São Paulo, Brasil</option>
+                                        <option value="-22.9068,-43.1729">Rio de Janeiro, Brasil</option>
+                                        <option value="51.5074,-0.1278">Londres, Reino Unido</option>
+                                        <option value="48.8566,2.3522">Paris, França</option>
+                                        <option value="35.6762,139.6503">Tóquio, Japão</option>
+                                    </select>
+                                </div>
+
+                                <div class="form-group">
+                                    <label class="form-label" for="date">
+                                        <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                        </svg>
+                                        Data de Observação
+                                    </label>
+                                    <input type="date" class="form-input" id="date" required>
+                                </div>
                             </div>
-                        </button>
-                    </form>
+
+                            <button type="submit" class="search-btn" id="searchBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                </svg>
+                                <span class="btn-text">Gerar Mapa Estelar</span>
+                                <div class="btn-loading">
+                                    <svg class="loading-spinner" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z">
+                                            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                                        </path>
+                                    </svg>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
                 </div>
-            </section>
+
+                <!-- Suggestions Panel -->
+                <div class="suggestions-panel">
+                    <div class="suggestions-card">
+                        <h3 class="suggestions-title">
+                            <svg class="suggestions-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
+                            Constelações Populares
+                        </h3>
+                        <p class="suggestions-subtitle">Clique para selecionar rapidamente</p>
+
+                        <div class="suggestions-grid">
+                            <button class="suggestion-item" data-constellation="ori">
+                                <div class="suggestion-icon">⭐</div>
+                                <div class="suggestion-content">
+                                    <h4>Orion</h4>
+                                    <p>O caçador celestial</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-constellation="uma">
+                                <div class="suggestion-icon">🐻</div>
+                                <div class="suggestion-content">
+                                    <h4>Ursa Major</h4>
+                                    <p>A Grande Ursa</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-constellation="cas">
+                                <div class="suggestion-icon">👑</div>
+                                <div class="suggestion-content">
+                                    <h4>Cassiopeia</h4>
+                                    <p>A rainha vaidosa</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-constellation="cyg">
+                                <div class="suggestion-icon">🦢</div>
+                                <div class="suggestion-content">
+                                    <h4>Cygnus</h4>
+                                    <p>O cisne voador</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-constellation="leo">
+                                <div class="suggestion-icon">🦁</div>
+                                <div class="suggestion-content">
+                                    <h4>Leo</h4>
+                                    <p>O leão majestoso</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-constellation="sco">
+                                <div class="suggestion-icon">🦂</div>
+                                <div class="suggestion-content">
+                                    <h4>Scorpius</h4>
+                                    <p>O escorpião</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <!-- Loading Section -->
             <section class="loading-section" id="loadingSection">
@@ -408,71 +544,8 @@
                     </div>
                 </div>
             </section>
-
-            <!-- Featured Constellations -->
-            <section class="featured-section">
-                <div class="featured-header">
-                    <h2 class="section-title">
-                        <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-                        </svg>
-                        Constelações Populares
-                    </h2>
-                    <p class="section-subtitle">Explore algumas das constelações mais fascinantes</p>
-                </div>
-
-                <div class="featured-grid">
-                    <div class="featured-card" data-constellation="ori">
-                        <div class="featured-content">
-                            <h3 class="featured-title">Orion</h3>
-                            <p class="featured-description">O caçador celestial, uma das constelações mais reconhecíveis</p>
-                            <button class="featured-btn">Explorar</button>
-                        </div>
-                    </div>
-
-                    <div class="featured-card" data-constellation="uma">
-                        <div class="featured-content">
-                            <h3 class="featured-title">Ursa Major</h3>
-                            <p class="featured-description">A Grande Ursa, lar da famosa constelação do Arado</p>
-                            <button class="featured-btn">Explorar</button>
-                        </div>
-                    </div>
-
-                    <div class="featured-card" data-constellation="cas">
-                        <div class="featured-content">
-                            <h3 class="featured-title">Cassiopeia</h3>
-                            <p class="featured-description">A rainha vaidosa em forma de W no céu noturno</p>
-                            <button class="featured-btn">Explorar</button>
-                        </div>
-                    </div>
-
-                    <div class="featured-card" data-constellation="cyg">
-                        <div class="featured-content">
-                            <h3 class="featured-title">Cygnus</h3>
-                            <p class="featured-description">O cisne voando pela Via Láctea</p>
-                            <button class="featured-btn">Explorar</button>
-                        </div>
-                    </div>
-
-                    <div class="featured-card" data-constellation="leo">
-                        <div class="featured-content">
-                            <h3 class="featured-title">Leo</h3>
-                            <p class="featured-description">O leão majestoso do zodíaco</p>
-                            <button class="featured-btn">Explorar</button>
-                        </div>
-                    </div>
-
-                    <div class="featured-card" data-constellation="sco">
-                        <div class="featured-content">
-                            <h3 class="featured-title">Scorpius</h3>
-                            <p class="featured-description">O escorpião com sua estrela vermelha Antares</p>
-                            <button class="featured-btn">Explorar</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
         </div>
-    </main>
+    </section>
 
     <!-- Footer -->
     <footer class="footer">
@@ -504,30 +577,15 @@
 
             <div class="footer-bottom">
                 <p>&copy; 2025 Explorador de Constelações. Feito com ❤️ para os amantes da astronomia.</p>
+                <p>Site desenvolvido por Gabriel Vieira</p>
             </div>
         </div>
     </footer>
-
-    <!-- Fullscreen Modal -->
-    <div class="fullscreen-modal" id="fullscreenModal">
-        <div class="modal-backdrop"></div>
-        <div class="fullscreen-content">
-            <button class="fullscreen-close" id="fullscreenClose" aria-label="Fechar modal">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
-                </svg>
-            </button>
-            <img id="fullscreenImage" class="fullscreen-image" alt="Mapa estelar em tela cheia">
-        </div>
-    </div>
 
     <!-- Toast Container -->
     <div class="toast-container" id="toastContainer"></div>
 </div>
 
-<script src="src/utils.js"></script>
-<script src="src/ui.js"></script>
-<script src="src/api.js"></script>
-<script src="src/main.js"></script>
+<script src="src/app.js"></script>
 </body>
 </html>
