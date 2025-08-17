@@ -1,10 +1,24 @@
+/**
+ * Main application controller for the Astronomy Explorer
+ * @fileoverview Orchestrates the entire application functionality
+ */
+
+import { astronomyAPI, APIError } from './api.js';
+import { ToastManager, ThemeManager, LoadingManager, ModalManager, ProgressManager, AnimationManager } from './ui.js';
+import { formatDate, parseCoordinates, isValidDate, downloadFile, shareContent, scrollToElement } from './utils.js';
+
+/**
+ * Main application class
+ */
 class AstronomyExplorer {
     constructor() {
-        this.apiKey = '';
-        this.apiSecret = '';
-        this.baseUrl = 'https://api.astronomyapi.com/api/v2';
-        this.currentDate = new Date().toISOString().split('T')[0];
+        // Initialize managers
+        this.toast = new ToastManager();
+        this.theme = new ThemeManager();
+        this.loading = new LoadingManager();
+        this.modal = new ModalManager();
 
+        // Initialize application
         this.init();
         this.setupEventListeners();
         this.setDefaultDate();
@@ -12,26 +26,58 @@ class AstronomyExplorer {
         this.createInteractiveStars();
     }
 
+    /**
+     * Initialize DOM elements and progress manager
+     */
     init() {
+        // Form elements
         this.form = document.getElementById('constellationForm');
+        this.searchBtn = document.getElementById('searchBtn');
+
+        // Section elements
         this.loadingSection = document.getElementById('loadingSection');
         this.resultsSection = document.getElementById('resultsSection');
         this.errorSection = document.getElementById('errorSection');
-        this.constellationImage = document.getElementById('constellationImage');
         this.constellationInfo = document.getElementById('constellationInfo');
-        this.searchBtn = document.getElementById('searchBtn');
-        this.progressBar = document.getElementById('progressBar');
+
+        // Result elements
+        this.constellationImage = document.getElementById('constellationImage');
         this.fullscreenModal = document.getElementById('fullscreenModal');
+
+        // Progress manager
+        this.progressManager = new ProgressManager(document.getElementById('progressBar'));
+
+        // Current request data
+        this.currentRequest = null;
     }
 
+    /**
+     * Set default date to today
+     */
     setDefaultDate() {
         const dateInput = document.getElementById('date');
-        dateInput.value = this.currentDate;
+        if (dateInput) {
+            dateInput.value = formatDate(new Date());
+        }
     }
 
+    /**
+     * Setup all event listeners
+     */
     setupEventListeners() {
         // Form submission
-        this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        if (this.form) {
+            this.form.addEventListener('submit', (e) => this.handleSubmit(e));
+        }
+
+        // Theme toggle
+        const themeToggle = document.getElementById('themeToggle');
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => {
+                const newTheme = this.theme.toggleTheme();
+                this.toast.show(`Tema alterado para ${newTheme === 'light' ? 'claro' : 'escuro'}`, 'info', 2000);
+            });
+        }
 
         // Featured constellation cards
         document.querySelectorAll('.featured-card').forEach(card => {
@@ -39,510 +85,534 @@ class AstronomyExplorer {
                 const constellation = card.dataset.constellation;
                 this.selectFeaturedConstellation(constellation);
             });
+
+            // Add keyboard support
+            card.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    const constellation = card.dataset.constellation;
+                    this.selectFeaturedConstellation(constellation);
+                }
+            });
         });
 
         // Action buttons
-        document.getElementById('downloadBtn')?.addEventListener('click', () => this.downloadImage());
-        document.getElementById('shareBtn')?.addEventListener('click', () => this.shareConstellation());
-        document.getElementById('fullscreenBtn')?.addEventListener('click', () => this.openFullscreen());
-        document.getElementById('retryBtn')?.addEventListener('click', () => this.retrySearch());
+        this.setupActionButtons();
 
         // Config buttons
-        document.getElementById('saveConfigBtn')?.addEventListener('click', () => this.saveApiCredentials());
+        const saveConfigBtn = document.getElementById('saveConfigBtn');
+        if (saveConfigBtn) {
+            saveConfigBtn.addEventListener('click', () => this.saveApiCredentials());
+        }
 
         // Fullscreen modal
-        document.getElementById('fullscreenClose')?.addEventListener('click', () => this.closeFullscreen());
-        this.fullscreenModal?.addEventListener('click', (e) => {
-            if (e.target === this.fullscreenModal) {
-                this.closeFullscreen();
-            }
-        });
+        this.setupFullscreenModal();
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && this.fullscreenModal.classList.contains('show')) {
-                this.closeFullscreen();
-            }
-        });
+        // Retry button
+        const retryBtn = document.getElementById('retryBtn');
+        if (retryBtn) {
+            retryBtn.addEventListener('click', () => this.retrySearch());
+        }
     }
 
+    /**
+     * Setup action buttons (download, share, fullscreen)
+     */
+    setupActionButtons() {
+        const downloadBtn = document.getElementById('downloadBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const fullscreenBtn = document.getElementById('fullscreenBtn');
+
+        if (downloadBtn) {
+            downloadBtn.addEventListener('click', () => this.downloadImage());
+        }
+
+        if (shareBtn) {
+            shareBtn.addEventListener('click', () => this.shareConstellation());
+        }
+
+        if (fullscreenBtn) {
+            fullscreenBtn.addEventListener('click', () => this.openFullscreen());
+        }
+    }
+
+    /**
+     * Setup fullscreen modal functionality
+     */
+    setupFullscreenModal() {
+        const fullscreenClose = document.getElementById('fullscreenClose');
+
+        if (fullscreenClose) {
+            fullscreenClose.addEventListener('click', () => this.closeFullscreen());
+        }
+
+        if (this.fullscreenModal) {
+            // Close on backdrop click
+            this.fullscreenModal.addEventListener('click', (e) => {
+                if (e.target === this.fullscreenModal || e.target.classList.contains('modal-backdrop')) {
+                    this.closeFullscreen();
+                }
+            });
+        }
+    }
+
+    /**
+     * Load API credentials from localStorage
+     */
     loadApiCredentials() {
         const savedKey = localStorage.getItem('astronomy_api_key');
         const savedSecret = localStorage.getItem('astronomy_api_secret');
 
         if (savedKey && savedSecret) {
-            this.apiKey = savedKey;
-            this.apiSecret = savedSecret;
-            document.getElementById('apiKey').value = savedKey;
-            document.getElementById('apiSecret').value = savedSecret;
-            this.showNotification('Credenciais da API carregadas!', 'success');
+            astronomyAPI.setCredentials(savedKey, savedSecret);
+
+            const apiKeyInput = document.getElementById('apiKey');
+            const apiSecretInput = document.getElementById('apiSecret');
+
+            if (apiKeyInput) apiKeyInput.value = savedKey;
+            if (apiSecretInput) apiSecretInput.value = savedSecret;
+
+            this.toast.show('Credenciais da API carregadas!', 'success', 3000);
         }
     }
 
+    /**
+     * Save API credentials to localStorage
+     */
     saveApiCredentials() {
-        const apiKey = document.getElementById('apiKey').value.trim();
-        const apiSecret = document.getElementById('apiSecret').value.trim();
+        const apiKeyInput = document.getElementById('apiKey');
+        const apiSecretInput = document.getElementById('apiSecret');
+
+        if (!apiKeyInput || !apiSecretInput) return;
+
+        const apiKey = apiKeyInput.value.trim();
+        const apiSecret = apiSecretInput.value.trim();
 
         if (!apiKey || !apiSecret) {
-            this.showNotification('Por favor, preencha ambos os campos da API.', 'error');
+            this.toast.show('Por favor, preencha ambos os campos da API.', 'error');
+            AnimationManager.shake(apiKeyInput.parentElement);
             return;
         }
 
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
+        // Set credentials in API client
+        astronomyAPI.setCredentials(apiKey, apiSecret);
 
+        // Save to localStorage
         localStorage.setItem('astronomy_api_key', apiKey);
         localStorage.setItem('astronomy_api_secret', apiSecret);
 
-        this.showNotification('Credenciais da API salvas com sucesso!', 'success');
+        this.toast.show('Credenciais da API salvas com sucesso!', 'success');
+        AnimationManager.pulse(document.querySelector('.config-btn'));
     }
 
+    /**
+     * Select a featured constellation
+     * @param {string} constellation - Constellation code
+     */
     selectFeaturedConstellation(constellation) {
-        document.getElementById('constellation').value = constellation;
-        document.getElementById('style').value = 'default';
+        const constellationSelect = document.getElementById('constellation');
+        const styleSelect = document.getElementById('style');
 
-        // Scroll to form
-        document.querySelector('.search-section').scrollIntoView({
-            behavior: 'smooth'
-        });
+        if (constellationSelect) constellationSelect.value = constellation;
+        if (styleSelect) styleSelect.value = 'default';
+
+        // Scroll to form with smooth animation
+        scrollToElement('.search-section');
 
         // Highlight the form briefly
         const searchCard = document.querySelector('.search-card');
-        searchCard.style.transform = 'scale(1.02)';
-        searchCard.style.boxShadow = '0 30px 60px rgba(99, 102, 241, 0.3)';
-
-        setTimeout(() => {
-            searchCard.style.transform = '';
-            searchCard.style.boxShadow = '';
-        }, 1000);
+        if (searchCard) {
+            AnimationManager.pulse(searchCard);
+            this.toast.show(`Constelação ${this.getConstellationName(constellation)} selecionada!`, 'info', 2000);
+        }
     }
 
+    /**
+     * Handle form submission
+     * @param {Event} e - Form submit event
+     */
     async handleSubmit(e) {
         e.preventDefault();
 
-        // Reset all sections first
+        // Reset all sections and states
         this.hideAllSections();
-        this.setButtonLoading(false);
-        this.updateProgress(0);
+        this.progressManager.reset();
 
-        if (!this.apiKey || !this.apiSecret) {
-            this.showError('Credenciais da API não configuradas', 'Por favor, configure suas credenciais da Astronomy API na seção de configuração abaixo.');
+        // Check API credentials
+        if (!astronomyAPI.hasCredentials()) {
+            this.showError(
+                'Credenciais da API não configuradas',
+                'Por favor, configure suas credenciais da Astronomy API na seção de configuração abaixo.'
+            );
+            scrollToElement('.config-section');
             return;
         }
 
-        const constellation = document.getElementById('constellation').value;
-        const style = document.getElementById('style').value;
-        const location = document.getElementById('location').value;
-        const date = document.getElementById('date').value;
+        // Get form data
+        const formData = this.getFormData();
 
-        if (!constellation || !style || !location || !date) {
-            this.showError('Campos obrigatórios', 'Por favor, preencha todos os campos: constelação, estilo, localização e data.');
+        // Validate form data
+        const validation = this.validateFormData(formData);
+        if (!validation.valid) {
+            this.showError('Dados inválidos', validation.message);
             return;
         }
 
+        // Show loading and start generation
         this.showLoading();
 
         try {
-            await this.generateStarChart(constellation, style, location, date);
+            await this.generateStarChart(formData);
         } catch (error) {
-            console.error('Erro na requisição:', error);
-            this.showError('Erro na API', error.message, error.details);
-        }
-    }
+            console.error('Error generating star chart:', error);
 
-    async generateStarChart(constellation, style, location, date) {
-        this.setButtonLoading(true);
-        this.updateProgress(0);
-
-        try {
-            // Parse location
-            if (!date || date.trim() === '') {
-                throw new Error('Data é obrigatória');
-            }
-
-            // Ensure date is in YYYY-MM-DD format
-            const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-            if (!dateRegex.test(date)) {
-                throw new Error('Formato de data inválido. Use YYYY-MM-DD');
-            }
-
-            if (!location) {
-                throw new Error('Localização não selecionada');
-            }
-
-            const locationParts = location.split(',');
-            if (locationParts.length !== 2) {
-                throw new Error('Formato de localização inválido');
-            }
-
-            const [latitude, longitude] = locationParts.map(coord => parseFloat(coord.trim()));
-
-            if (isNaN(latitude) || isNaN(longitude)) {
-                throw new Error('Coordenadas inválidas');
-            }
-
-            // Validate constellation and style
-            if (!constellation || constellation.trim() === '') {
-                throw new Error('Constelação é obrigatória');
-            }
-
-            if (!style || style.trim() === '') {
-                throw new Error('Estilo é obrigatório');
-            }
-
-            // Prepare request data
-            const requestData = {
-                style: style,
-                observer: {
-                    latitude: latitude,
-                    longitude: longitude,
-                    date: date
-                },
-                view: {
-                    type: "constellation",
-                    parameters: {
-                        constellation: constellation
-                    }
-                }
-            };
-
-            console.log('Request data:', JSON.stringify(requestData, null, 2));
-
-            this.updateProgress(25);
-
-            // Create authorization header
-            const auth = btoa(`${this.apiKey}:${this.apiSecret}`);
-
-            // Make API request
-            const response = await fetch(`${this.baseUrl}/studio/star-chart`, {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Basic ${auth}`,
-                    'Content-Type': 'application/json',
-                    'Accept': 'application/json'
-                },
-                body: JSON.stringify(requestData)
-            });
-
-            this.updateProgress(75);
-
-            if (!response.ok) {
-                const errorData = await response.json().catch(() => ({}));
-                console.error('API Error Response:', errorData);
-                throw new Error(`API Error: ${response.status} - ${response.statusText}`, {
-                    cause: {
-                        status: response.status,
-                        statusText: response.statusText,
-                        details: errorData
-                    }
-                });
-            }
-
-            const data = await response.json();
-            console.log('API Success Response:', data);
-            this.updateProgress(100);
-
-            if (!data.data || !data.data.imageUrl) {
-                throw new Error('Resposta inválida da API', {
-                    cause: {
-                        response: data
-                    }
-                });
-            }
-
-            // Display results
-            this.displayResults(constellation, style, location, date, data.data.imageUrl, requestData);
-
-        } catch (error) {
-            console.error('Erro detalhado:', error);
-
-            let errorMessage = 'Erro desconhecido';
-            let errorDetails = '';
-
-            if (error.cause) {
-                if (error.cause.status === 401) {
-                    errorMessage = 'Credenciais inválidas';
-                    errorDetails = 'Verifique se sua Application ID e Application Secret estão corretas.';
-                } else if (error.cause.status === 429) {
-                    errorMessage = 'Limite de requisições excedido';
-                    errorDetails = 'Aguarde alguns minutos antes de tentar novamente.';
-                } else if (error.cause.status >= 500) {
-                    errorMessage = 'Erro no servidor da API';
-                    errorDetails = 'O servidor da Astronomy API está temporariamente indisponível.';
-                } else {
-                    errorMessage = error.message;
-                    errorDetails = JSON.stringify(error.cause, null, 2);
-                }
-            } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-                errorMessage = 'Erro de conexão';
-                errorDetails = 'Verifique sua conexão com a internet e tente novamente.';
+            if (error instanceof APIError) {
+                this.showError(error.getUserMessage(), this.formatErrorDetails(error));
             } else {
-                errorMessage = error.message;
-                errorDetails = error.stack || 'Nenhum detalhe adicional disponível.';
+                this.showError('Erro inesperado', error.message);
             }
-
-            this.showError(errorMessage, errorDetails);
-
-        } finally {
-            this.setButtonLoading(false);
         }
     }
 
-    updateProgress(percentage) {
-        if (this.progressBar) {
-            this.progressBar.style.width = `${percentage}%`;
-        }
-    }
-
-    displayResults(constellation, style, location, date, imageUrl, requestData) {
-        this.hideAllSections();
-
-        // Get constellation name
-        const constellationSelect = document.getElementById('constellation');
-        const constellationName = constellationSelect.options[constellationSelect.selectedIndex].text;
-
-        // Get location name
-        const locationSelect = document.getElementById('location');
-        const locationName = locationSelect.options[locationSelect.selectedIndex].text;
-
-        // Update results title
-        document.getElementById('resultsTitle').innerHTML = `
-            <span class="results-icon">✨</span>
-            ${constellationName}
-        `;
-
-        // Update image
-        this.constellationImage.src = imageUrl;
-        this.constellationImage.alt = `Mapa estelar da constelação ${constellationName}`;
-
-        // Update overlay
-        document.getElementById('overlayTitle').textContent = constellationName;
-        document.getElementById('overlayDescription').textContent = `Mapa estelar gerado pela Astronomy API - Estilo: ${style}`;
-
-        // Update info cards
-        document.getElementById('requestDetails').innerHTML = `
-            <p><strong>Constelação:</strong> ${constellationName} (${constellation})</p>
-            <p><strong>Estilo:</strong> ${style}</p>
-            <p><strong>URL da Imagem:</strong> <a href="${imageUrl}" target="_blank" style="color: var(--primary-color); word-break: break-all;">${imageUrl}</a></p>
-        `;
-
-        document.getElementById('constellationDescription').textContent = this.getConstellationDescription(constellation);
-        document.getElementById('locationInfo').textContent = `${locationName} (${location})`;
-        document.getElementById('dateTimeInfo').textContent = `${new Date(date).toLocaleDateString('pt-BR')} - ${new Date().toLocaleTimeString('pt-BR')}`;
-
-        // Show results
-        this.resultsSection.classList.add('show');
-        this.constellationInfo.classList.add('show');
-
-        // Scroll to results
-        this.resultsSection.scrollIntoView({ behavior: 'smooth' });
-
-        // Add success animation
-        this.animateResults();
-
-        // Show success notification
-        this.showNotification('Mapa estelar gerado com sucesso!', 'success');
-    }
-
-    getConstellationDescription(constellation) {
-        const descriptions = {
-            'ori': 'Órion é uma das constelações mais reconhecíveis do céu noturno, representando um caçador mitológico.',
-            'uma': 'A Ursa Maior é uma das constelações mais conhecidas, contendo o famoso asterismo da "Grande Carroça".',
-            'cas': 'Cassiopeia é facilmente reconhecível por sua forma distintiva de "W" ou "M".',
-            'cyg': 'Cygnus, o Cisne, é uma grande constelação que se estende ao longo da Via Láctea.',
-            'leo': 'Leo é uma constelação zodiacal facilmente reconhecível, representando um leão.',
-            'sco': 'Scorpius é uma constelação zodiacal que realmente se parece com um escorpião.',
-            'and': 'Andrômeda é famosa por conter a Galáxia de Andrômeda, a galáxia espiral mais próxima da Via Láctea.',
-            'per': 'Perseu é uma constelação que contém várias estrelas brilhantes e é o radiante da chuva de meteoros Perseidas.',
-            'gem': 'Gêmeos representa os gêmeos Castor e Pólux, com duas estrelas brilhantes com os mesmos nomes.',
-            'tau': 'Touro é uma constelação zodiacal que contém as Plêiades e as Híades.',
-            'vir': 'Virgem é a segunda maior constelação do céu e contém Spica, uma das estrelas mais brilhantes.',
-            'sgr': 'Sagitário aponta para o centro da Via Láctea e contém muitos aglomerados estelares.',
-            'aqr': 'Aquário é conhecido como o "Portador de Água" e contém várias nebulosas planetárias.',
-            'psc': 'Peixes representa dois peixes conectados por uma corda.',
-            'ari': 'Áries representa um carneiro e é historicamente importante como o primeiro signo do zodíaco.',
-            'cnc': 'Câncer contém o aglomerado estelar M44, conhecido como Colmeia ou Presépio.',
-            'lib': 'Libra representa uma balança e é a única constelação zodiacal que representa um objeto inanimado.',
-            'cap': 'Capricórnio representa uma cabra marinha e é uma das constelações mais antigas conhecidas.',
-            'aql': 'Aquila, a Águia, contém Altair, uma das estrelas do Triângulo de Verão.',
-            'lyr': 'Lyra é uma pequena constelação que contém Vega, uma das estrelas mais brilhantes do céu.',
-            'dra': 'Draco é uma grande constelação que serpenteia ao redor do polo norte celestial.',
-            'umi': 'A Ursa Menor contém a Estrela Polar (Polaris), que marca o polo norte celestial.',
-            'cep': 'Cefeu é uma constelação circumpolar que representa um rei da mitologia grega.',
-            'her': 'Hércules é uma grande constelação que representa o herói da mitologia grega.',
-            'boo': 'Boötes, o Pastor, contém Arcturus, uma das estrelas mais brilhantes do céu.',
-            'cru': 'Crux, o Cruzeiro do Sul, é a menor das 88 constelações modernas.',
-            'cen': 'Centaurus representa um centauro e contém Alpha Centauri, o sistema estelar mais próximo do Sol.',
-            'car': 'Carina fazia parte da antiga constelação Argo Navis e contém Canopus.',
-            'vel': 'Vela também fazia parte de Argo Navis e representa as velas do navio.',
-            'pup': 'Puppis representa a popa do navio Argo e contém várias estrelas brilhantes.'
+    /**
+     * Get form data
+     * @returns {Object} Form data object
+     */
+    getFormData() {
+        return {
+            constellation: document.getElementById('constellation')?.value,
+            style: document.getElementById('style')?.value,
+            location: document.getElementById('location')?.value,
+            date: document.getElementById('date')?.value
         };
-
-        return descriptions[constellation] || 'Uma fascinante constelação do céu noturno com sua própria história e características únicas.';
     }
 
-    animateResults() {
-        const resultsCard = document.querySelector('.results-card');
-        resultsCard.style.opacity = '0';
-        resultsCard.style.transform = 'translateY(30px)';
+    /**
+     * Validate form data
+     * @param {Object} formData - Form data to validate
+     * @returns {Object} Validation result
+     */
+    validateFormData(formData) {
+        const { constellation, style, location, date } = formData;
 
-        setTimeout(() => {
-            resultsCard.style.transition = 'all 0.6s ease';
-            resultsCard.style.opacity = '1';
-            resultsCard.style.transform = 'translateY(0)';
-        }, 100);
-    }
+        if (!constellation) {
+            return { valid: false, message: 'Por favor, selecione uma constelação.' };
+        }
 
-    showLoading() {
-        this.hideAllSections();
-        this.loadingSection.classList.add('show');
-        this.updateProgress(0);
-    }
-
-    showError(title, message, details = '') {
-        this.hideAllSections();
-        document.getElementById('errorMessage').textContent = message;
-
-        const errorDetails = document.getElementById('errorDetails');
-        if (details) {
-            errorDetails.textContent = typeof details === 'string' ? details : JSON.stringify(details, null, 2);
-            errorDetails.style.display = 'block';
-        } else {
-            errorDetails.style.display = 'none';
+        if (!style) {
+            return { valid: false, message: 'Por favor, selecione um estilo de visualização.' };
         }
 
         if (!location) {
-            this.showError('Localização obrigatória', 'Por favor, selecione uma localização.');
-            return;
+            return { valid: false, message: 'Por favor, selecione uma localização.' };
         }
 
         if (!date) {
-            this.showError('Data obrigatória', 'Por favor, selecione uma data.');
-            return;
+            return { valid: false, message: 'Por favor, selecione uma data.' };
         }
-        this.errorSection.classList.add('show');
-        this.setButtonLoading(false);
+
+        if (!isValidDate(date)) {
+            return { valid: false, message: 'Formato de data inválido. Use YYYY-MM-DD.' };
+        }
+
+        const coordinates = parseCoordinates(location);
+        if (!coordinates) {
+            return { valid: false, message: 'Coordenadas de localização inválidas.' };
+        }
+
+        return { valid: true };
     }
 
+    /**
+     * Generate star chart using API
+     * @param {Object} formData - Form data
+     */
+    async generateStarChart(formData) {
+        const { constellation, style, location, date } = formData;
+
+        // Parse coordinates
+        const coordinates = parseCoordinates(location);
+
+        // Set loading state
+        this.loading.show('starChart', this.searchBtn);
+        this.progressManager.animateToProgress(25, 500);
+
+        try {
+            // Store current request
+            this.currentRequest = {
+                constellation,
+                style,
+                location,
+                date,
+                coordinates
+            };
+
+            // Make API request
+            const response = await astronomyAPI.generateStarChart({
+                constellation,
+                style,
+                latitude: coordinates.lat,
+                longitude: coordinates.lng,
+                date
+            });
+
+            this.progressManager.animateToProgress(100, 300);
+
+            // Wait a bit for progress animation
+            await new Promise(resolve => setTimeout(resolve, 500));
+
+            // Display results
+            this.displayResults(response.data.imageUrl);
+
+        } finally {
+            this.loading.hide('starChart', this.searchBtn);
+        }
+    }
+
+    /**
+     * Display results
+     * @param {string} imageUrl - Generated image URL
+     */
+    displayResults(imageUrl) {
+        this.hideAllSections();
+
+        const { constellation, style, location, date } = this.currentRequest;
+
+        // Update results title
+        const resultsTitle = document.getElementById('resultsTitle');
+        if (resultsTitle) {
+            const constellationName = this.getConstellationName(constellation);
+            resultsTitle.innerHTML = `
+                <svg class="results-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/>
+                </svg>
+                ${constellationName}
+            `;
+        }
+
+        // Update image
+        if (this.constellationImage) {
+            this.constellationImage.src = imageUrl;
+            this.constellationImage.alt = `Mapa estelar da constelação ${this.getConstellationName(constellation)}`;
+        }
+
+        // Update overlay
+        const overlayTitle = document.getElementById('overlayTitle');
+        const overlayDescription = document.getElementById('overlayDescription');
+
+        if (overlayTitle) {
+            overlayTitle.textContent = this.getConstellationName(constellation);
+        }
+
+        if (overlayDescription) {
+            overlayDescription.textContent = `Mapa estelar gerado pela Astronomy API - Estilo: ${style}`;
+        }
+
+        // Update info cards
+        this.updateInfoCards(imageUrl);
+
+        // Show results with animation
+        if (this.resultsSection) {
+            this.resultsSection.classList.add('show');
+            AnimationManager.animateIn(this.resultsSection);
+        }
+
+        if (this.constellationInfo) {
+            this.constellationInfo.classList.add('show');
+        }
+
+        // Scroll to results
+        scrollToElement(this.resultsSection);
+
+        // Show success notification
+        this.toast.show('Mapa estelar gerado com sucesso!', 'success');
+    }
+
+    /**
+     * Update info cards with current request data
+     * @param {string} imageUrl - Generated image URL
+     */
+    updateInfoCards(imageUrl) {
+        const { constellation, style, location, date } = this.currentRequest;
+
+        // Request details
+        const requestDetails = document.getElementById('requestDetails');
+        if (requestDetails) {
+            const constellationName = this.getConstellationName(constellation);
+            requestDetails.innerHTML = `
+                <p><strong>Constelação:</strong> ${constellationName} (${constellation})</p>
+                <p><strong>Estilo:</strong> ${this.getStyleName(style)}</p>
+                <p><strong>URL da Imagem:</strong> <a href="${imageUrl}" target="_blank" rel="noopener noreferrer" style="color: var(--primary-500); word-break: break-all;">${imageUrl}</a></p>
+            `;
+        }
+
+        // Constellation description
+        const constellationDescription = document.getElementById('constellationDescription');
+        if (constellationDescription) {
+            constellationDescription.textContent = this.getConstellationDescription(constellation);
+        }
+
+        // Location info
+        const locationInfo = document.getElementById('locationInfo');
+        if (locationInfo) {
+            const locationName = this.getLocationName(location);
+            locationInfo.textContent = `${locationName} (${location})`;
+        }
+
+        // Date and time info
+        const dateTimeInfo = document.getElementById('dateTimeInfo');
+        if (dateTimeInfo) {
+            const formattedDate = new Date(date).toLocaleDateString('pt-BR');
+            const currentTime = new Date().toLocaleTimeString('pt-BR');
+            dateTimeInfo.textContent = `${formattedDate} - Gerado às ${currentTime}`;
+        }
+    }
+
+    /**
+     * Show loading state
+     */
+    showLoading() {
+        this.hideAllSections();
+        if (this.loadingSection) {
+            this.loadingSection.classList.add('show');
+            AnimationManager.animateIn(this.loadingSection);
+        }
+    }
+
+    /**
+     * Show error state
+     * @param {string} title - Error title
+     * @param {string} message - Error message
+     * @param {string} details - Error details
+     */
+    showError(title, message, details = '') {
+        this.hideAllSections();
+
+        const errorMessage = document.getElementById('errorMessage');
+        const errorDetails = document.getElementById('errorDetails');
+
+        if (errorMessage) {
+            errorMessage.textContent = message;
+        }
+
+        if (errorDetails) {
+            if (details) {
+                errorDetails.textContent = typeof details === 'string' ? details : JSON.stringify(details, null, 2);
+                errorDetails.style.display = 'block';
+            } else {
+                errorDetails.style.display = 'none';
+            }
+        }
+
+        if (this.errorSection) {
+            this.errorSection.classList.add('show');
+            AnimationManager.animateIn(this.errorSection);
+        }
+
+        // Show error toast
+        this.toast.show(title, 'error');
+    }
+
+    /**
+     * Hide all sections
+     */
     hideAllSections() {
-        this.loadingSection.classList.remove('show');
-        this.resultsSection.classList.remove('show');
-        this.errorSection.classList.remove('show');
-        this.constellationInfo.classList.remove('show');
-    }
+        const sections = [this.loadingSection, this.resultsSection, this.errorSection];
 
-    setButtonLoading(loading) {
-        const searchBtn = document.getElementById('searchBtn');
-        if (loading) {
-            searchBtn.classList.add('loading');
-            searchBtn.disabled = true;
-        } else {
-            searchBtn.classList.remove('loading');
-            searchBtn.disabled = false;
+        sections.forEach(section => {
+            if (section) {
+                section.classList.remove('show');
+            }
+        });
+
+        if (this.constellationInfo) {
+            this.constellationInfo.classList.remove('show');
         }
     }
 
+    /**
+     * Retry search
+     */
     retrySearch() {
         this.hideAllSections();
-        this.setButtonLoading(false);
-        this.updateProgress(0);
-        document.querySelector('.search-section').scrollIntoView({ behavior: 'smooth' });
+        this.progressManager.reset();
+        scrollToElement('.search-section');
+        this.toast.show('Pronto para nova busca!', 'info', 2000);
     }
 
+    /**
+     * Download constellation image
+     */
     downloadImage() {
-        const imageUrl = this.constellationImage.src;
-        const link = document.createElement('a');
-        link.href = imageUrl;
-        link.download = 'constellation-star-chart.png';
-        link.target = '_blank';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        if (!this.constellationImage || !this.constellationImage.src) {
+            this.toast.show('Nenhuma imagem disponível para download', 'error');
+            return;
+        }
 
-        this.showNotification('Download iniciado!', 'success');
+        const constellation = this.currentRequest?.constellation || 'constellation';
+        const filename = `star-chart-${constellation}-${Date.now()}.png`;
+
+        downloadFile(this.constellationImage.src, filename);
+        this.toast.show('Download iniciado!', 'success');
     }
 
-    shareConstellation() {
-        const imageUrl = this.constellationImage.src;
-        const constellationSelect = document.getElementById('constellation');
-        const constellationName = constellationSelect.options[constellationSelect.selectedIndex].text;
+    /**
+     * Share constellation
+     */
+    async shareConstellation() {
+        if (!this.constellationImage || !this.currentRequest) {
+            this.toast.show('Nenhum conteúdo disponível para compartilhar', 'error');
+            return;
+        }
 
-        if (navigator.share) {
-            navigator.share({
-                title: `Mapa Estelar - ${constellationName}`,
-                text: `Confira este mapa estelar da constelação ${constellationName}!`,
-                url: imageUrl
-            }).catch(console.error);
+        const constellationName = this.getConstellationName(this.currentRequest.constellation);
+        const shareData = {
+            title: `Mapa Estelar - ${constellationName}`,
+            text: `Confira este mapa estelar da constelação ${constellationName}!`,
+            url: this.constellationImage.src
+        };
+
+        const success = await shareContent(shareData);
+
+        if (success) {
+            this.toast.show('Conteúdo compartilhado!', 'success');
         } else {
-            // Fallback: copy to clipboard
-            const shareText = `Mapa Estelar - ${constellationName}: ${imageUrl}`;
-            navigator.clipboard.writeText(shareText).then(() => {
-                this.showNotification('Link copiado para a área de transferência!', 'success');
-            }).catch(() => {
-                this.showNotification('Erro ao copiar link', 'error');
-            });
+            this.toast.show('Erro ao compartilhar conteúdo', 'error');
         }
     }
 
+    /**
+     * Open fullscreen modal
+     */
     openFullscreen() {
+        if (!this.constellationImage || !this.constellationImage.src) {
+            this.toast.show('Nenhuma imagem disponível', 'error');
+            return;
+        }
+
         const fullscreenImage = document.getElementById('fullscreenImage');
-        fullscreenImage.src = this.constellationImage.src;
-        fullscreenImage.alt = this.constellationImage.alt;
-        this.fullscreenModal.classList.add('show');
-        document.body.style.overflow = 'hidden';
+        if (fullscreenImage) {
+            fullscreenImage.src = this.constellationImage.src;
+            fullscreenImage.alt = this.constellationImage.alt;
+        }
+
+        this.modal.open('fullscreenModal');
     }
 
+    /**
+     * Close fullscreen modal
+     */
     closeFullscreen() {
-        this.fullscreenModal.classList.remove('show');
-        document.body.style.overflow = '';
+        this.modal.close('fullscreenModal');
     }
 
-    showNotification(message, type = 'info') {
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-
-        const colors = {
-            success: '#10b981',
-            error: '#ef4444',
-            warning: '#f59e0b',
-            info: '#6366f1'
-        };
-
-        notification.style.cssText = `
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: ${colors[type] || colors.info};
-            color: white;
-            padding: 1rem 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-            z-index: 1000;
-            transform: translateX(100%);
-            transition: transform 0.3s ease;
-            max-width: 300px;
-            word-wrap: break-word;
-        `;
-
-        document.body.appendChild(notification);
-
-        setTimeout(() => {
-            notification.style.transform = 'translateX(0)';
-        }, 100);
-
-        setTimeout(() => {
-            notification.style.transform = 'translateX(100%)';
-            setTimeout(() => {
-                if (document.body.contains(notification)) {
-                    document.body.removeChild(notification);
-                }
-            }, 300);
-        }, 4000);
-    }
-
+    /**
+     * Create interactive stars in background
+     */
     createInteractiveStars() {
         const starsContainer = document.querySelector('.stars-container');
+        if (!starsContainer) return;
+
         const numberOfStars = 100;
 
         for (let i = 0; i < numberOfStars; i++) {
@@ -564,9 +634,114 @@ class AstronomyExplorer {
             starsContainer.appendChild(star);
         }
     }
+
+    /**
+     * Get constellation name from code
+     * @param {string} code - Constellation code
+     * @returns {string} Constellation name
+     */
+    getConstellationName(code) {
+        const constellationSelect = document.getElementById('constellation');
+        if (!constellationSelect) return code;
+
+        const option = constellationSelect.querySelector(`option[value="${code}"]`);
+        return option ? option.textContent : code;
+    }
+
+    /**
+     * Get style name from code
+     * @param {string} code - Style code
+     * @returns {string} Style name
+     */
+    getStyleName(code) {
+        const styleNames = {
+            'default': 'Padrão',
+            'inverted': 'Invertido',
+            'navy': 'Azul Marinho',
+            'red': 'Vermelho'
+        };
+        return styleNames[code] || code;
+    }
+
+    /**
+     * Get location name from coordinates
+     * @param {string} location - Location coordinates
+     * @returns {string} Location name
+     */
+    getLocationName(location) {
+        const locationSelect = document.getElementById('location');
+        if (!locationSelect) return location;
+
+        const option = locationSelect.querySelector(`option[value="${location}"]`);
+        return option ? option.textContent : location;
+    }
+
+    /**
+     * Get constellation description
+     * @param {string} constellation - Constellation code
+     * @returns {string} Constellation description
+     */
+    getConstellationDescription(constellation) {
+        const descriptions = {
+            'ori': 'Órion é uma das constelações mais reconhecíveis do céu noturno, representando um caçador mitológico com seu cinturão de três estrelas.',
+            'uma': 'A Ursa Maior é uma das constelações mais conhecidas, contendo o famoso asterismo da "Grande Carroça" ou "Arado".',
+            'cas': 'Cassiopeia é facilmente reconhecível por sua forma distintiva de "W" ou "M", representando a rainha vaidosa da mitologia grega.',
+            'cyg': 'Cygnus, o Cisne, é uma grande constelação que se estende ao longo da Via Láctea, com Deneb marcando sua cauda.',
+            'leo': 'Leo é uma constelação zodiacal facilmente reconhecível, representando um leão com Regulus como sua estrela mais brilhante.',
+            'sco': 'Scorpius é uma constelação zodiacal que realmente se parece com um escorpião, com Antares como seu "coração" vermelho.',
+            'and': 'Andrômeda é famosa por conter a Galáxia de Andrômeda, a galáxia espiral mais próxima da Via Láctea.',
+            'per': 'Perseu é uma constelação que contém várias estrelas brilhantes e é o radiante da chuva de meteoros Perseidas.',
+            'gem': 'Gêmeos representa os gêmeos Castor e Pólux, com duas estrelas brilhantes com os mesmos nomes.',
+            'tau': 'Touro é uma constelação zodiacal que contém as Plêiades e as Híades, dois dos aglomerados estelares mais famosos.',
+            'vir': 'Virgem é a segunda maior constelação do céu e contém Spica, uma das estrelas mais brilhantes.',
+            'sgr': 'Sagitário aponta para o centro da Via Láctea e contém muitos aglomerados estelares e nebulosas.',
+            'aqr': 'Aquário é conhecido como o "Portador de Água" e contém várias nebulosas planetárias interessantes.',
+            'psc': 'Peixes representa dois peixes conectados por uma corda, sendo uma constelação zodiacal.',
+            'ari': 'Áries representa um carneiro e é historicamente importante como o primeiro signo do zodíaco.',
+            'cnc': 'Câncer contém o aglomerado estelar M44, conhecido como Colmeia ou Presépio.',
+            'lib': 'Libra representa uma balança e é a única constelação zodiacal que representa um objeto inanimado.',
+            'cap': 'Capricórnio representa uma cabra marinha e é uma das constelações mais antigas conhecidas.',
+            'aql': 'Aquila, a Águia, contém Altair, uma das estrelas do famoso Triângulo de Verão.',
+            'lyr': 'Lyra é uma pequena constelação que contém Vega, uma das estrelas mais brilhantes do céu noturno.',
+            'dra': 'Draco é uma grande constelação que serpenteia ao redor do polo norte celestial.',
+            'umi': 'A Ursa Menor contém a Estrela Polar (Polaris), que marca o polo norte celestial.',
+            'cep': 'Cefeu é uma constelação circumpolar que representa um rei da mitologia grega.',
+            'her': 'Hércules é uma grande constelação que representa o herói da mitologia grega.',
+            'boo': 'Boötes, o Pastor, contém Arcturus, uma das estrelas mais brilhantes do céu.',
+            'cru': 'Crux, o Cruzeiro do Sul, é a menor das 88 constelações modernas, mas muito importante para navegação.',
+            'cen': 'Centaurus representa um centauro e contém Alpha Centauri, o sistema estelar mais próximo do Sol.',
+            'car': 'Carina fazia parte da antiga constelação Argo Navis e contém Canopus, a segunda estrela mais brilhante.',
+            'vel': 'Vela também fazia parte de Argo Navis e representa as velas do navio dos Argonautas.',
+            'pup': 'Puppis representa a popa do navio Argo e contém várias estrelas brilhantes e nebulosas.'
+        };
+
+        return descriptions[constellation] || 'Uma fascinante constelação do céu noturno com sua própria história e características únicas.';
+    }
+
+    /**
+     * Format error details for display
+     * @param {APIError} error - API error object
+     * @returns {string} Formatted error details
+     */
+    formatErrorDetails(error) {
+        const details = error.getDetails();
+
+        let formatted = `Status: ${details.status} - ${details.statusText}\n`;
+
+        if (details.details && details.details.errors) {
+            formatted += '\nDetalhes da validação:\n';
+            details.details.errors.forEach(err => {
+                formatted += `- ${err.property}: ${err.message}\n`;
+            });
+        } else if (details.details) {
+            formatted += `\nDetalhes: ${JSON.stringify(details.details, null, 2)}`;
+        }
+
+        return formatted;
+    }
 }
 
-// Initialize the application
+// Initialize the application when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     new AstronomyExplorer();
 });

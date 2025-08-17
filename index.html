@@ -11,6 +11,17 @@
     <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌌</text></svg>">
 </head>
 <body>
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+    <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+    <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+</button>
+
 <div class="app-container">
     <!-- Animated Background -->
     <div class="animated-bg">
@@ -29,7 +40,9 @@
         <div class="container">
             <div class="header-content">
                 <h1 class="title">
-                    <span class="title-icon">🌌</span>
+                    <svg class="title-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                    </svg>
                     Explorador de Constelações
                 </h1>
                 <p class="subtitle">Descubra as maravilhas do universo com a Astronomy API</p>
@@ -44,7 +57,9 @@
             <section class="search-section">
                 <div class="search-card">
                     <h2 class="card-title">
-                        <span class="card-icon">🔭</span>
+                        <svg class="card-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                         Gerar Mapa Estelar
                     </h2>
 
@@ -52,7 +67,9 @@
                         <div class="form-grid">
                             <div class="form-group">
                                 <label class="form-label" for="constellation">
-                                    <span class="label-icon">⭐</span>
+                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
                                     Constelação
                                 </label>
                                 <select class="form-select" id="constellation" name="constellation" required>
@@ -150,7 +167,9 @@
 
                             <div class="form-group">
                                 <label class="form-label" for="style">
-                                    <span class="label-icon">🎨</span>
+                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                                    </svg>
                                     Estilo de Visualização
                                 </label>
                                 <select class="form-select" id="style" name="style" required>
@@ -164,7 +183,9 @@
 
                             <div class="form-group">
                                 <label class="form-label" for="location">
-                                    <span class="label-icon">📍</span>
+                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                    </svg>
                                     Localização do Observador
                                 </label>
                                 <select class="form-select" id="location">
@@ -183,7 +204,9 @@
 
                             <div class="form-group">
                                 <label class="form-label" for="date">
-                                    <span class="label-icon">📅</span>
+                                    <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                    </svg>
                                     Data de Observação
                                 </label>
                                 <input type="date" class="form-input" id="date" required>
@@ -191,10 +214,16 @@
                         </div>
 
                         <button type="submit" class="search-btn" id="searchBtn">
-                            <span class="btn-icon">🔍</span>
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                            </svg>
                             <span class="btn-text">Gerar Mapa Estelar</span>
                             <div class="btn-loading">
-                                <div class="loading-spinner"></div>
+                                <svg class="loading-spinner" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z">
+                                        <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                                    </path>
+                                </svg>
                             </div>
                         </button>
                     </form>
@@ -226,20 +255,28 @@
                 <div class="results-card">
                     <div class="results-header">
                         <h2 class="results-title" id="resultsTitle">
-                            <span class="results-icon">✨</span>
+                            <svg class="results-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                            </svg>
                             Mapa Estelar Gerado
                         </h2>
                         <div class="results-actions">
                             <button class="action-btn" id="downloadBtn">
-                                <span class="btn-icon">💾</span>
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                </svg>
                                 Baixar
                             </button>
                             <button class="action-btn" id="shareBtn">
-                                <span class="btn-icon">📤</span>
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z"/>
+                                </svg>
                                 Compartilhar
                             </button>
                             <button class="action-btn" id="fullscreenBtn">
-                                <span class="btn-icon">🔍</span>
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7,14H5V19H10V17H7V14M12,14H14V17H17V19H12V14M17,10V7H14V5H19V10H17M10,5V7H7V10H5V5H10Z"/>
+                                </svg>
                                 Tela Cheia
                             </button>
                         </div>
@@ -261,7 +298,9 @@
                         <div class="info-grid">
                             <div class="info-card">
                                 <h4 class="info-title">
-                                    <span class="info-icon">📊</span>
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7,2V4H17V2H19V6H17V20A2,2 0 0,1 15,22H9A2,2 0 0,1 7,20V6H5V2H7M9,4V6H15V4H9Z"/>
+                                    </svg>
                                     Detalhes da Requisição
                                 </h4>
                                 <div class="info-content" id="requestDetails"></div>
@@ -269,7 +308,9 @@
 
                             <div class="info-card">
                                 <h4 class="info-title">
-                                    <span class="info-icon">🌟</span>
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                    </svg>
                                     Sobre a Constelação
                                 </h4>
                                 <p class="info-content" id="constellationDescription"></p>
@@ -277,7 +318,9 @@
 
                             <div class="info-card">
                                 <h4 class="info-title">
-                                    <span class="info-icon">📍</span>
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                    </svg>
                                     Localização
                                 </h4>
                                 <p class="info-content" id="locationInfo"></p>
@@ -285,7 +328,9 @@
 
                             <div class="info-card">
                                 <h4 class="info-title">
-                                    <span class="info-icon">⏰</span>
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.9L16.2,16.2Z"/>
+                                    </svg>
                                     Data e Hora
                                 </h4>
                                 <p class="info-content" id="dateTimeInfo"></p>
@@ -298,12 +343,16 @@
             <!-- Error Section -->
             <section class="error-section" id="errorSection">
                 <div class="error-card">
-                    <div class="error-icon">⚠️</div>
+                    <svg class="error-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                    </svg>
                     <h3 class="error-title">Erro na Requisição</h3>
                     <p class="error-message" id="errorMessage"></p>
                     <div class="error-details" id="errorDetails"></div>
                     <button class="retry-btn" id="retryBtn">
-                        <span class="btn-icon">🔄</span>
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                        </svg>
                         Tentar Novamente
                     </button>
                 </div>
@@ -313,7 +362,9 @@
             <section class="config-section">
                 <div class="config-card">
                     <h2 class="config-title">
-                        <span class="config-icon">⚙️</span>
+                        <svg class="config-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.5,5.32 14.87,5.07L14.5,2.42C14.46,2.18 14.25,2 14,2H10C9.75,2 9.54,2.18 9.5,2.42L9.13,5.07C8.5,5.32 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.94C7.96,18.34 8.5,18.68 9.13,18.93L9.5,21.58C9.54,21.82 9.75,22 10,22H14C14.25,22 14.46,21.82 14.5,21.58L14.87,18.93C15.5,18.68 16.04,18.34 16.56,17.94L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/>
+                        </svg>
                         Configuração da API
                     </h2>
                     <p class="config-description">
@@ -322,20 +373,26 @@
                     <div class="config-form">
                         <div class="form-group">
                             <label class="form-label" for="apiKey">
-                                <span class="label-icon">🔑</span>
+                                <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7,14A3,3 0 0,0 10,17A3,3 0 0,0 13,14A3,3 0 0,0 10,11A3,3 0 0,0 7,14M12.65,10C11.83,7.67 9.61,6 7,6A6,6 0 0,0 1,12A6,6 0 0,0 7,18C9.61,18 11.83,16.33 12.65,14H17V18H21V14H23V10H12.65Z"/>
+                                </svg>
                                 Chave da API (Application ID)
                             </label>
                             <input type="text" class="form-input" id="apiKey" placeholder="Sua Application ID da Astronomy API">
                         </div>
                         <div class="form-group">
                             <label class="form-label" for="apiSecret">
-                                <span class="label-icon">🔐</span>
+                                <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M12,17A2,2 0 0,0 14,15C14,13.89 13.1,13 12,13A2,2 0 0,0 10,15A2,2 0 0,0 12,17M18,8A2,2 0 0,1 20,10V20A2,2 0 0,1 18,22H6A2,2 0 0,1 4,20V10C4,8.89 4.9,8 6,8H7V6A5,5 0 0,1 12,1A5,5 0 0,1 17,6V8H18M12,3A3,3 0 0,0 9,6V8H15V6A3,3 0 0,0 12,3Z"/>
+                                </svg>
                                 Segredo da API (Application Secret)
                             </label>
                             <input type="password" class="form-input" id="apiSecret" placeholder="Seu Application Secret da Astronomy API">
                         </div>
                         <button class="config-btn" id="saveConfigBtn">
-                            <span class="btn-icon">💾</span>
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M15,9H5V5H15M12,19A3,3 0 0,1 9,16A3,3 0 0,1 12,13A3,3 0 0,1 15,16A3,3 0 0,1 12,19M17,3H5C3.89,3 3,3.9 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V7L17,3Z"/>
+                            </svg>
                             Salvar Configuração
                         </button>
                     </div>
@@ -356,7 +413,9 @@
             <section class="featured-section">
                 <div class="featured-header">
                     <h2 class="section-title">
-                        <span class="section-icon">🌟</span>
+                        <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                        </svg>
                         Constelações Populares
                     </h2>
                     <p class="section-subtitle">Explore algumas das constelações mais fascinantes</p>
@@ -451,13 +510,24 @@
 
     <!-- Fullscreen Modal -->
     <div class="fullscreen-modal" id="fullscreenModal">
+        <div class="modal-backdrop"></div>
         <div class="fullscreen-content">
-            <button class="fullscreen-close" id="fullscreenClose">&times;</button>
+            <button class="fullscreen-close" id="fullscreenClose" aria-label="Fechar modal">
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M19,6.41L17.59,5L12,10.59L6.41,5L5,6.41L10.59,12L5,17.59L6.41,19L12,13.41L17.59,19L19,17.59L13.41,12L19,6.41Z"/>
+                </svg>
+            </button>
             <img id="fullscreenImage" class="fullscreen-image" alt="Mapa estelar em tela cheia">
         </div>
     </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
 </div>
 
+<script src="src/utils.js"></script>
+<script src="src/ui.js"></script>
+<script src="src/api.js"></script>
 <script src="src/main.js"></script>
 </body>
 </html>

@@ -478,3 +478,31 @@ body {
 .repo-card:hover::before {
     transform: scaleX(1);
 }
+
+/* Tamanho padrão para ícones SVG */
+svg.title-icon,
+svg.card-icon,
+svg.results-icon,
+svg.section-icon,
+svg.btn-icon,
+svg.theme-icon,
+svg.label-icon,
+svg.error-icon,
+svg.config-icon {
+    width: 1.5em;
+    height: 1.5em;
+    min-width: 24px;
+    min-height: 24px;
+    max-width: 32px;
+    max-height: 32px;
+    vertical-align: middle;
+}
+
+.action-btn svg.btn-icon,
+.featured-btn svg,
+.search-btn svg.btn-icon {
+    width: 1.2em;
+    height: 1.2em;
+    min-width: 20px;
+    min-height: 20px;
+}
