@@ -820,7 +820,6 @@ class AstronomyExplorer {
 
         // Result elements
         this.constellationImage = document.getElementById('constellationImage');
-        this.fullscreenModal = document.getElementById('fullscreenModal');
 
         // Progress manager
         this.progressManager = new ProgressManager(document.getElementById('progressBar'));
@@ -886,9 +885,6 @@ class AstronomyExplorer {
             saveConfigBtn.addEventListener('click', () => this.saveApiCredentials());
         }
 
-        // Fullscreen modal
-        this.setupFullscreenModal();
-
         // Retry button
         const retryBtn = document.getElementById('retryBtn');
         if (retryBtn) {
@@ -910,7 +906,7 @@ class AstronomyExplorer {
         // Reset all sections
         this.hideAllSections();
 
-        this.toast.show('Bem-vindo ao Explorador de Constelações!', 'info', 2000);
+        this.toast.show('Bem-vindo ao Explore as Estrelas!', 'info', 2000);
     }
 
     /**
@@ -952,26 +948,6 @@ class AstronomyExplorer {
     }
 
     /**
-     * Setup fullscreen modal functionality
-     */
-    setupFullscreenModal() {
-        const fullscreenClose = document.getElementById('fullscreenClose');
-
-        if (fullscreenClose) {
-            fullscreenClose.addEventListener('click', () => this.closeFullscreen());
-        }
-
-        if (this.fullscreenModal) {
-            // Close on backdrop click
-            this.fullscreenModal.addEventListener('click', (e) => {
-                if (e.target === this.fullscreenModal || e.target.classList.contains('modal-backdrop')) {
-                    this.closeFullscreen();
-                }
-            });
-        }
-    }
-
-    /**
      * Load API credentials from localStorage
      */
     loadApiCredentials() {
@@ -1005,7 +981,9 @@ class AstronomyExplorer {
 
         if (!apiKey || !apiSecret) {
             this.toast.show('Por favor, preencha ambos os campos da API.', 'error');
-            AnimationManager.shake(apiKeyInput.parentElement);
+            if (apiKeyInput.parentElement) {
+                AnimationManager.shake(apiKeyInput.parentElement);
+            }
             return;
         }
 
@@ -1017,7 +995,10 @@ class AstronomyExplorer {
         localStorage.setItem('astronomy_api_secret', apiSecret);
 
         this.toast.show('Credenciais da API salvas com sucesso!', 'success');
-        AnimationManager.pulse(document.querySelector('.config-btn'));
+        const configBtn = document.querySelector('.config-btn');
+        if (configBtn) {
+            AnimationManager.pulse(configBtn);
+        }
     }
 
     /**
@@ -1065,7 +1046,6 @@ class AstronomyExplorer {
         // Reset all sections and states
         this.hideAllSections();
         this.progressManager.reset();
-        this.setButtonLoading(false);
 
         // Check API credentials
         if (!this.astronomyAPI.hasCredentials()) {
@@ -1073,7 +1053,10 @@ class AstronomyExplorer {
                 'Credenciais da API não configuradas',
                 'Por favor, configure suas credenciais da Astronomy API na seção de configuração abaixo.'
             );
-            scrollToElement('.config-section');
+            const configSection = document.querySelector('.config-section');
+            if (configSection) {
+                scrollToElement(configSection);
+            }
             return;
         }
 
@@ -1366,7 +1349,10 @@ class AstronomyExplorer {
         this.hideAllSections();
         this.progressManager.reset();
         this.setButtonLoading(false);
-        scrollToElement('.search-panel');
+        const searchPanel = document.querySelector('.search-panel');
+        if (searchPanel) {
+            scrollToElement(searchPanel);
+        }
         this.toast.show('Pronto para nova busca!', 'info', 2000);
     }
 
@@ -1420,20 +1406,13 @@ class AstronomyExplorer {
             return;
         }
 
-        const fullscreenImage = document.getElementById('fullscreenImage');
-        if (fullscreenImage) {
-            fullscreenImage.src = this.constellationImage.src;
-            fullscreenImage.alt = this.constellationImage.alt;
+        // Open image in new tab for fullscreen viewing
+        const newWindow = window.open(this.constellationImage.src, '_blank');
+        if (newWindow) {
+            this.toast.show('Imagem aberta em nova aba!', 'success');
+        } else {
+            this.toast.show('Erro ao abrir imagem em tela cheia', 'error');
         }
-
-        this.modal.open('fullscreenModal');
-    }
-
-    /**
-     * Close fullscreen modal
-     */
-    closeFullscreen() {
-        this.modal.close('fullscreenModal');
     }
 
     /**
