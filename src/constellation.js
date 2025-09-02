@@ -477,38 +477,9 @@ class APIError extends Error {
  */
 class AstronomyAPI {
     constructor() {
-        this.baseUrl = 'https://api.astronomyapi.com/api/v2';
-        this.apiKey = '';
-        this.apiSecret = '';
-    }
-
-    /**
-     * Set API credentials
-     * @param {string} apiKey - Application ID
-     * @param {string} apiSecret - Application Secret
-     */
-    setCredentials(apiKey, apiSecret) {
-        this.apiKey = apiKey;
-        this.apiSecret = apiSecret;
-    }
-
-    /**
-     * Check if credentials are set
-     * @returns {boolean} Whether credentials are available
-     */
-    hasCredentials() {
-        return !!(this.apiKey && this.apiSecret);
-    }
-
-    /**
-     * Create authorization header
-     * @returns {string} Base64 encoded authorization header
-     */
-    getAuthHeader() {
-        if (!this.hasCredentials()) {
-            throw new Error('API credentials not set');
-        }
-        return btoa(`${this.apiKey}:${this.apiSecret}`);
+        this.baseUrl = 'https://bozeiu0ny3.execute-api.sa-east-1.amazonaws.com';
+        // Credenciais fixas da sua API
+        this.authHeader = 'dHllZGZzZGY6dHdyZXQyMzQ=';
     }
 
     /**
@@ -523,7 +494,7 @@ class AstronomyAPI {
         const defaultOptions = {
             method: 'GET',
             headers: {
-                'Authorization': `Basic ${this.getAuthHeader()}`,
+                'Authorization': `Basic ${this.authHeader}`,
                 'Content-Type': 'application/json',
                 'Accept': 'application/json'
             }
@@ -607,7 +578,7 @@ class AstronomyAPI {
 
         console.log('API Request:', JSON.stringify(requestData, null, 2));
 
-        const response = await this.request('/studio/star-chart', {
+        const response = await this.request('/constellations', {
             method: 'POST',
             body: JSON.stringify(requestData)
         });
@@ -640,7 +611,6 @@ class ConstellationApp {
         this.init();
         this.setupEventListeners();
         this.setDefaultDate();
-        this.loadApiCredentials();
         this.createInteractiveStars();
     }
 
@@ -716,12 +686,6 @@ class ConstellationApp {
         this.setupActionButtons();
 
         // Config buttons
-        const saveConfigBtn = document.getElementById('saveConfigBtn');
-        if (saveConfigBtn) {
-            saveConfigBtn.addEventListener('click', () => this.saveApiCredentials());
-        }
-
-        // Retry button
         const retryBtn = document.getElementById('retryBtn');
         if (retryBtn) {
             retryBtn.addEventListener('click', () => this.retrySearch());
@@ -746,60 +710,6 @@ class ConstellationApp {
 
         if (fullscreenBtn) {
             fullscreenBtn.addEventListener('click', () => this.openFullscreen());
-        }
-    }
-
-    /**
-     * Load API credentials from localStorage
-     */
-    loadApiCredentials() {
-        const savedKey = localStorage.getItem('astronomy_api_key');
-        const savedSecret = localStorage.getItem('astronomy_api_secret');
-
-        if (savedKey && savedSecret) {
-            this.astronomyAPI.setCredentials(savedKey, savedSecret);
-
-            const apiKeyInput = document.getElementById('apiKey');
-            const apiSecretInput = document.getElementById('apiSecret');
-
-            if (apiKeyInput) apiKeyInput.value = savedKey;
-            if (apiSecretInput) apiSecretInput.value = savedSecret;
-
-            this.toast.show('Credenciais da API carregadas!', 'success', 3000);
-        }
-    }
-
-    /**
-     * Save API credentials to localStorage
-     */
-    saveApiCredentials() {
-        const apiKeyInput = document.getElementById('apiKey');
-        const apiSecretInput = document.getElementById('apiSecret');
-
-        if (!apiKeyInput || !apiSecretInput) return;
-
-        const apiKey = apiKeyInput.value.trim();
-        const apiSecret = apiSecretInput.value.trim();
-
-        if (!apiKey || !apiSecret) {
-            this.toast.show('Por favor, preencha ambos os campos da API.', 'error');
-            if (apiKeyInput.parentElement) {
-                AnimationManager.shake(apiKeyInput.parentElement);
-            }
-            return;
-        }
-
-        // Set credentials in API client
-        this.astronomyAPI.setCredentials(apiKey, apiSecret);
-
-        // Save to localStorage
-        localStorage.setItem('astronomy_api_key', apiKey);
-        localStorage.setItem('astronomy_api_secret', apiSecret);
-
-        this.toast.show('Credenciais da API salvas com sucesso!', 'success');
-        const configBtn = document.querySelector('.config-btn');
-        if (configBtn) {
-            AnimationManager.pulse(configBtn);
         }
     }
 
@@ -848,19 +758,6 @@ class ConstellationApp {
         // Reset all sections and states
         this.hideAllSections();
         this.progressManager.reset();
-
-        // Check API credentials
-        if (!this.astronomyAPI.hasCredentials()) {
-            this.showError(
-                'Credenciais da API não configuradas',
-                'Por favor, configure suas credenciais da Astronomy API na seção de configuração abaixo.'
-            );
-            const configSection = document.querySelector('.config-section');
-            if (configSection) {
-                scrollToElement(configSection);
-            }
-            return;
-        }
 
         // Get form data
         const formData = this.getFormData();
