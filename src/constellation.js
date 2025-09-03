@@ -477,7 +477,7 @@ class APIError extends Error {
  */
 class AstronomyAPI {
     constructor() {
-        this.baseUrl = 'https://bozeiu0ny3.execute-api.sa-east-1.amazonaws.com';
+        this.baseUrl = 'https://9nj2r6j9fd.execute-api.sa-east-1.amazonaws.com';
         // Credenciais fixas da sua API
         this.authHeader = 'dHllZGZzZGY6dHdyZXQyMzQ=';
     }
