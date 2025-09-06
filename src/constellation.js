@@ -585,7 +585,7 @@ class AstronomyAPI {
 
         console.log('API Response:', response);
 
-        if (!response.data || !response.data.imageUrl) {
+        if (!response || !response.imageUrl) {
             throw new Error('Invalid API response: missing image URL');
         }
 
@@ -874,7 +874,7 @@ class ConstellationApp {
             await new Promise(resolve => setTimeout(resolve, 500));
 
             // Display results
-            this.displayResults(response.data.imageUrl);
+            this.displayResults(response.imageUrl);
         } catch (error) {
             throw error;
         }
