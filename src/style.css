@@ -428,6 +428,64 @@ body {
     display: block;
 }
 
+/* Moon Screen */
+.moon-screen {
+    display: none;
+    min-height: 100vh;
+    padding: 2rem 0;
+}
+
+.moon-screen.active {
+    display: block;
+}
+
+/* Form Sections */
+.form-section {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.section-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.section-icon {
+    width: 16px !important;
+    height: 16px !important;
+    flex-shrink: 0;
+}
+
+/* Moon Display */
+.moon-display {
+    margin-bottom: 2rem;
+}
+
+.moon-image {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.moon-info {
+    display: none;
+}
+
+.moon-info.show {
+    display: block;
+}
+
 .screen-header {
     display: flex;
     align-items: center;

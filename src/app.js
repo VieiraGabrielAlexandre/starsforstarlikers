@@ -850,6 +850,14 @@ class AstronomyExplorer {
             });
         }
 
+        // Moon phases navigation
+        const moonOption = document.querySelector('.option-card:nth-child(2)');
+        if (moonOption && !moonOption.classList.contains('coming-soon')) {
+            moonOption.addEventListener('click', () => {
+                window.location.href = 'moon.html';
+            });
+        }
+
         // Theme toggle
         const themeToggle = document.getElementById('themeToggle');
         if (themeToggle) {

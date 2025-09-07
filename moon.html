@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fases da Lua - Explore as Estrelas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="src/style.css">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌙</text></svg>">
+</head>
+<body>
+<!-- Theme Toggle -->
+<button class="theme-toggle" id="themeToggle" aria-label="Alternar tema">
+    <svg class="theme-icon sun-icon" viewBox="0 0 24 24" fill="currentColor">
+        <circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2m0 16v2M4.93 4.93l1.41 1.41m11.32 11.32l1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/>
+    </svg>
+    <svg class="theme-icon moon-icon" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+</button>
+
+<div class="app-container">
+    <!-- Animated Background -->
+    <div class="animated-bg">
+        <div class="stars-container"></div>
+        <div class="floating-shapes">
+            <div class="shape shape-1"></div>
+            <div class="shape shape-2"></div>
+            <div class="shape shape-3"></div>
+            <div class="shape shape-4"></div>
+            <div class="shape shape-5"></div>
+        </div>
+    </div>
+
+    <!-- Moon Phases Screen -->
+    <section class="moon-screen active">
+        <div class="container">
+            <!-- Header with Back Button -->
+            <header class="screen-header">
+                <button class="back-btn" id="backToHome" aria-label="Voltar ao início">
+                    <svg viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M20,11V13H8L13.5,18.5L12.08,19.92L4.16,12L12.08,4.08L13.5,5.5L8,11H20Z"/>
+                    </svg>
+                    Voltar
+                </button>
+                <h1 class="screen-title">
+                    <svg class="title-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                    </svg>
+                    Fases da Lua
+                </h1>
+            </header>
+
+            <div class="main-layout">
+                <!-- Search Section -->
+                <div class="search-panel">
+                    <div class="search-card">
+                        <h2 class="card-title">
+                            <svg class="card-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
+                            Gerar Visualização da Lua
+                        </h2>
+
+                        <form class="search-form" id="moonForm">
+                            <!-- Observer Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                    </svg>
+                                    Observador
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="latitude">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                            </svg>
+                                            Latitude
+                                        </label>
+                                        <input type="number" class="form-input" id="latitude" step="0.00001" min="-90" max="90" value="6.56774" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="longitude">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                            </svg>
+                                            Longitude
+                                        </label>
+                                        <input type="number" class="form-input" id="longitude" step="0.00001" min="-180" max="180" value="79.88956" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="date">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                            </svg>
+                                            Data de Observação
+                                        </label>
+                                        <input type="date" class="form-input" id="date" required>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Style Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7 2v11h3v9l7-12h-4l4-8z"/>
+                                    </svg>
+                                    Estilo Visual
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="moonStyle">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                            </svg>
+                                            Estilo da Lua
+                                        </label>
+                                        <select class="form-select" id="moonStyle" required>
+                                            <option value="default">Padrão</option>
+                                            <option value="sketch">Esboço</option>
+                                            <option value="shaded">Sombreado</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="backgroundStyle">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                                            </svg>
+                                            Fundo
+                                        </label>
+                                        <select class="form-select" id="backgroundStyle" required>
+                                            <option value="stars">Estrelas</option>
+                                            <option value="solid">Sólido</option>
+                                            <option value="transparent">Transparente</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="backgroundColor">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                                            </svg>
+                                            Cor de Fundo
+                                        </label>
+                                        <select class="form-select" id="backgroundColor" required>
+                                            <option value="red">Vermelho</option>
+                                            <option value="blue">Azul</option>
+                                            <option value="black">Preto</option>
+                                            <option value="navy">Azul Marinho</option>
+                                            <option value="purple">Roxo</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="headingColor">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M5,4V7H10.5V19H13.5V7H19V4H5Z"/>
+                                            </svg>
+                                            Cor do Título
+                                        </label>
+                                        <select class="form-select" id="headingColor" required>
+                                            <option value="white">Branco</option>
+                                            <option value="black">Preto</option>
+                                            <option value="yellow">Amarelo</option>
+                                            <option value="blue">Azul</option>
+                                            <option value="red">Vermelho</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="textColor">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M18.5,4L19.66,8.35L18.7,8.61C18.25,7.74 17.79,6.87 17.26,6.43C16.73,6 16.11,6 15.5,6H13V16.5C13,17 13,17.5 13.33,17.75C13.67,18 14.33,18 15,18V19H9V18C9.67,18 10.33,18 10.67,17.75C11,17.5 11,17 11,16.5V6H8.5C7.89,6 7.27,6 6.74,6.43C6.21,6.87 5.75,7.74 5.3,8.61L4.34,8.35L5.5,4H18.5Z"/>
+                                            </svg>
+                                            Cor do Texto
+                                        </label>
+                                        <select class="form-select" id="textColor" required>
+                                            <option value="red">Vermelho</option>
+                                            <option value="white">Branco</option>
+                                            <option value="black">Preto</option>
+                                            <option value="yellow">Amarelo</option>
+                                            <option value="blue">Azul</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- View Section -->
+                            <div class="form-section">
+                                <h3 class="section-title">
+                                    <svg class="section-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/>
+                                    </svg>
+                                    Visualização
+                                </h3>
+                                <div class="form-grid">
+                                    <div class="form-group">
+                                        <label class="form-label" for="orientation">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20A8,8 0 0,0 20,12A8,8 0 0,0 12,4M12,6A6,6 0 0,1 18,12A6,6 0 0,1 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6M12,8A4,4 0 0,0 8,12A4,4 0 0,0 12,16A4,4 0 0,0 16,12A4,4 0 0,0 12,8Z"/>
+                                            </svg>
+                                            Orientação
+                                        </label>
+                                        <select class="form-select" id="orientation" required>
+                                            <option value="south-up">Sul para Cima</option>
+                                            <option value="north-up">Norte para Cima</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="viewType">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M19,3H5C3.89,3 3,3.89 3,5V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M19,5V19H5V5H19Z"/>
+                                            </svg>
+                                            Tipo de Vista
+                                        </label>
+                                        <select class="form-select" id="viewType" required>
+                                            <option value="portrait-simple">Retrato Simples</option>
+                                            <option value="landscape-simple">Paisagem Simples</option>
+                                            <option value="portrait-detailed">Retrato Detalhado</option>
+                                            <option value="landscape-detailed">Paisagem Detalhado</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label class="form-label" for="format">
+                                            <svg class="label-icon" viewBox="0 0 24 24" fill="currentColor">
+                                                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                                            </svg>
+                                            Formato
+                                        </label>
+                                        <select class="form-select" id="format" required>
+                                            <option value="png">PNG</option>
+                                            <option value="jpg">JPG</option>
+                                            <option value="svg">SVG</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="search-btn" id="searchBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                                </svg>
+                                <span class="btn-text">Gerar Visualização da Lua</span>
+                                <div class="btn-loading">
+                                    <svg class="loading-spinner" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,4V2A10,10 0 0,0 2,12H4A8,8 0 0,1 12,4Z">
+                                            <animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="1s" repeatCount="indefinite"/>
+                                        </path>
+                                    </svg>
+                                </div>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Suggestions Panel -->
+                <div class="suggestions-panel">
+                    <div class="suggestions-card">
+                        <h3 class="suggestions-title">
+                            <svg class="suggestions-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
+                            Configurações Populares
+                        </h3>
+                        <p class="suggestions-subtitle">Clique para aplicar rapidamente</p>
+
+                        <div class="suggestions-grid">
+                            <button class="suggestion-item" data-preset="classic">
+                                <div class="suggestion-icon">🌙</div>
+                                <div class="suggestion-content">
+                                    <h4>Clássico</h4>
+                                    <p>Fundo estrelado, cores tradicionais</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-preset="modern">
+                                <div class="suggestion-icon">🌌</div>
+                                <div class="suggestion-content">
+                                    <h4>Moderno</h4>
+                                    <p>Design limpo, cores vibrantes</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-preset="vintage">
+                                <div class="suggestion-icon">📜</div>
+                                <div class="suggestion-content">
+                                    <h4>Vintage</h4>
+                                    <p>Estilo retrô, tons sépia</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-preset="minimal">
+                                <div class="suggestion-icon">⚪</div>
+                                <div class="suggestion-content">
+                                    <h4>Minimalista</h4>
+                                    <p>Fundo simples, foco na lua</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-preset="artistic">
+                                <div class="suggestion-icon">🎨</div>
+                                <div class="suggestion-content">
+                                    <h4>Artístico</h4>
+                                    <p>Cores vibrantes, estilo esboço</p>
+                                </div>
+                            </button>
+
+                            <button class="suggestion-item" data-preset="scientific">
+                                <div class="suggestion-icon">🔬</div>
+                                <div class="suggestion-content">
+                                    <h4>Científico</h4>
+                                    <p>Detalhado, informativo</p>
+                                </div>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Section -->
+            <section class="loading-section" id="loadingSection">
+                <div class="loading-card">
+                    <div class="loading-animation">
+                        <div class="loading-stars">
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                            <div class="star"></div>
+                        </div>
+                    </div>
+                    <h3 class="loading-title">Gerando visualização da lua...</h3>
+                    <p class="loading-text">Conectando com a Moon API</p>
+                    <div class="loading-progress">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section" id="resultsSection">
+                <div class="results-card">
+                    <div class="results-header">
+                        <h2 class="results-title" id="resultsTitle">
+                            <svg class="results-icon" viewBox="0 0 24 24" fill="currentColor">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                            </svg>
+                            Visualização da Lua Gerada
+                        </h2>
+                        <div class="results-actions">
+                            <button class="action-btn" id="downloadBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M5,20H19V18H5M19,9H15V3H9V9H5L12,16L19,9Z"/>
+                                </svg>
+                                Baixar
+                            </button>
+                            <button class="action-btn" id="shareBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M18,16.08C17.24,16.08 16.56,16.38 16.04,16.85L8.91,12.7C8.96,12.47 9,12.24 9,12C9,11.76 8.96,11.53 8.91,11.3L15.96,7.19C16.5,7.69 17.21,8 18,8A3,3 0 0,0 21,5A3,3 0 0,0 18,2A3,3 0 0,0 15,5C15,5.24 15.04,5.47 15.09,5.7L8.04,9.81C7.5,9.31 6.79,9 6,9A3,3 0 0,0 3,12A3,3 0 0,0 6,15C6.79,15 7.5,14.69 8.04,14.19L15.16,18.34C15.11,18.55 15.08,18.77 15.08,19C15.08,20.61 16.39,21.91 18,21.91C19.61,21.91 20.92,20.61 20.92,19A2.92,2.92 0 0,0 18,16.08Z"/>
+                                </svg>
+                                Compartilhar
+                            </button>
+                            <button class="action-btn" id="fullscreenBtn">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                                    <path d="M7,14H5V19H10V17H7V14M12,14H14V17H17V19H12V14M17,10V7H14V5H19V10H17M10,5V7H7V10H5V5H10Z"/>
+                                </svg>
+                                Tela Cheia
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="moon-display">
+                        <div class="image-container">
+                            <img id="moonImage" class="moon-image" alt="Visualização das fases da lua">
+                            <div class="image-overlay">
+                                <div class="overlay-content">
+                                    <h3 class="overlay-title" id="overlayTitle"></h3>
+                                    <p class="overlay-description" id="overlayDescription"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="moon-info" id="moonInfo">
+                        <div class="info-grid">
+                            <div class="info-card">
+                                <h4 class="info-title">
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M7,2V4H17V2H19V6H17V20A2,2 0 0,1 15,22H9A2,2 0 0,1 7,20V6H5V2H7M9,4V6H15V4H9Z"/>
+                                    </svg>
+                                    Detalhes da Requisição
+                                </h4>
+                                <div class="info-content" id="requestDetails"></div>
+                            </div>
+
+                            <div class="info-card">
+                                <h4 class="info-title">
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                                    </svg>
+                                    Informações Lunares
+                                </h4>
+                                <p class="info-content" id="moonDescription"></p>
+                            </div>
+
+                            <div class="info-card">
+                                <h4 class="info-title">
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                                    </svg>
+                                    Localização
+                                </h4>
+                                <p class="info-content" id="locationInfo"></p>
+                            </div>
+
+                            <div class="info-card">
+                                <h4 class="info-title">
+                                    <svg class="info-icon" viewBox="0 0 24 24" fill="currentColor">
+                                        <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M16.2,16.2L11,13V7H12.5V12.2L17,14.9L16.2,16.2Z"/>
+                                    </svg>
+                                    Data e Hora
+                                </h4>
+                                <p class="info-content" id="dateTimeInfo"></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Error Section -->
+            <section class="error-section" id="errorSection">
+                <div class="error-card">
+                    <svg class="error-icon" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M13,13H11V7H13M13,17H11V15H13M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2Z"/>
+                    </svg>
+                    <h3 class="error-title">Erro na Requisição</h3>
+                    <p class="error-message" id="errorMessage"></p>
+                    <div class="error-details" id="errorDetails"></div>
+                    <button class="retry-btn" id="retryBtn">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/>
+                        </svg>
+                        Tentar Novamente
+                    </button>
+                </div>
+            </section>
+
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h4 class="footer-title">Explore as Estrelas</h4>
+                    <p class="footer-text">Powered by Astronomy API - Descubra as maravilhas do universo</p>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-title">Links Úteis</h4>
+                    <ul class="footer-links">
+                        <li><a href="https://astronomyapi.com" class="footer-link" target="_blank">Astronomy API</a></li>
+                        <li><a href="https://astronomyapi.com/docs" class="footer-link" target="_blank">Documentação</a></li>
+                        <li><a href="index.html" class="footer-link">Voltar ao Início</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-section">
+                    <h4 class="footer-title">Recursos</h4>
+                    <ul class="footer-links">
+                        <li><a href="#" class="footer-link">Guia de Observação</a></li>
+                        <li><a href="#" class="footer-link">Calendário Astronômico</a></li>
+                        <li><a href="#" class="footer-link">Dicas para Iniciantes</a></li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <p>&copy; 2025 Explore as Estrelas. Feito com ❤️ para os amantes da astronomia.</p>
+                <p>Site desenvolvido por Gabriel Vieira</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+</div>
+
+<script src="src/moon.js"></script>
+</body>
+</html>
