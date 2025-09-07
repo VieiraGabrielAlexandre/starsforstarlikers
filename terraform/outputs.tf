@@ -7,6 +7,6 @@ output "cloudfront_url" {
 }
 
 output "cloudfront_distribution_id" {
-  value = aws_cloudfront_distribution.cdn.id
+  value       = aws_cloudfront_distribution.cdn.id
   description = "ID da distribuição CloudFront para invalidação de cache"
 }

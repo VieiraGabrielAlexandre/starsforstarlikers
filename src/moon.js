@@ -458,7 +458,7 @@ class APIError extends Error {
 class MoonAPI {
     constructor() {
         // Usando proxy CORS temporário até configurar CORS no AWS
-        this.baseUrl = 'https://cors-anywhere.herokuapp.com/https://9nj2r6j9fd.execute-api.sa-east-1.amazonaws.com';
+        this.baseUrl = 'https://9nj2r6j9fd.execute-api.sa-east-1.amazonaws.com';
         this.directUrl = 'https://9nj2r6j9fd.execute-api.sa-east-1.amazonaws.com';
         // Credenciais fixas da sua API
         this.authHeader = 'dHllZGZzZGY6dHdyZXQyMzQ=';

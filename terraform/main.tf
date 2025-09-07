@@ -3,7 +3,7 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "site" {
-  bucket = var.bucket_name
+  bucket        = var.bucket_name
   force_destroy = true
 }
 
@@ -15,7 +15,7 @@ resource "aws_s3_bucket_ownership_controls" "site" {
 }
 
 resource "aws_s3_bucket_public_access_block" "site" {
-  bucket = aws_s3_bucket.site.id
+  bucket                  = aws_s3_bucket.site.id
   block_public_acls       = true
   block_public_policy     = false
   ignore_public_acls      = true
@@ -124,5 +124,5 @@ resource "aws_s3_object" "site_files" {
     "png"  = "image/png"
     "jpg"  = "image/jpeg"
     "svg"  = "image/svg+xml"
-  }, split(".", each.value)[length(split(".", each.value))-1], "application/octet-stream")
+  }, split(".", each.value)[length(split(".", each.value)) - 1], "application/octet-stream")
 }
